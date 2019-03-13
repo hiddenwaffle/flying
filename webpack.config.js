@@ -2,6 +2,8 @@ const { DefinePlugin } = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
+const isProduction = process.env.NODE_ENV === 'production'
+
 module.exports = {
   entry: './js/index.ts',
   resolve: {
@@ -43,8 +45,8 @@ module.exports = {
     }),
     new DefinePlugin({
       // TODO: https://github.com/dhis2/settings-app/pull/131
-      // Can refactor this next version of webpack.
-      'process.env.NODE_ENV': JSON.stringify('production')
+      // Next version of webpack, can remove this and cross-env.
+      'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
     })
   ]
 }
