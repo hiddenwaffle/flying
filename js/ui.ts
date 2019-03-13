@@ -1,5 +1,5 @@
 import './main.css'
-import wrapper from './wrapper'
+import { wrapper } from './wrapper'
 
 const CONTAINER_ASPECT_WIDTH = 16;
 const CONTAINER_ASPECT_HEIGHT = 9;
@@ -51,4 +51,4 @@ class Ui {
   }
 }
 
-export default new Ui()
+export const ui = new Ui()

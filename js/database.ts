@@ -1,4 +1,4 @@
-import gfx from './gfx'
+import { gfx } from './gfx'
 
 class Database {
   doIt() {
@@ -7,4 +7,4 @@ class Database {
   }
 }
 
-export default new Database()
+export const db = new Database()

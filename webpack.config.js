@@ -1,8 +1,6 @@
+const { DefinePlugin } = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
-// TODO: Next version of webpack will have this - can remove cross-env (see package.json script).
-const env = process.env.NODE_ENV
 
 module.exports = {
   entry: './js/index.ts',
@@ -42,6 +40,11 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './js/index.html'
+    }),
+    new DefinePlugin({
+      // TODO: https://github.com/dhis2/settings-app/pull/131
+      // Can refactor this next version of webpack.
+      'process.env.NODE_ENV': JSON.stringify('production')
     })
   ]
 }

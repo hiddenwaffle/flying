@@ -8,4 +8,4 @@ class Wrapper {
   }
 }
 
-export default new Wrapper()
+export const wrapper = new Wrapper()

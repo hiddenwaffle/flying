@@ -1,6 +1,6 @@
 import * as grassPng from './grass2.png'
-import wrapper from './wrapper'
-import ui from './ui'
+import { wrapper } from './wrapper'
+import { ui } from './ui'
 
 function doTheThing() {
   const createScene = function () {
@@ -71,4 +71,4 @@ class Gfx {
   }
 }
 
-export default new Gfx()
+export const gfx = new Gfx()
