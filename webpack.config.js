@@ -1,10 +1,11 @@
 const { DefinePlugin } = require('webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 const isProduction = process.env.NODE_ENV === 'production'
 
-module.exports = {
+const config = {
   entry: './js/index.ts',
   resolve: {
     extensions: ['.ts', '.js']
@@ -50,3 +51,9 @@ module.exports = {
     })
   ]
 }
+
+if (isProduction) {
+  config.plugins.push(new CleanWebpackPlugin())
+}
+
+module.exports = config

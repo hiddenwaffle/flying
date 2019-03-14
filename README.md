@@ -17,7 +17,7 @@ yarn run dev
 lein uberjar
 
 # JS
-rm -rf dist docs
+rm -rf docs
 yarn run build
 mv dist docs
 ```
