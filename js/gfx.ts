@@ -33,13 +33,17 @@ function doTheThing() {
 
     // Middle
     var sphere1 = BABYLON.MeshBuilder.CreateSphere("sphere1", {}, scene);
+    sphere1.setParent(sphere0)
+    sphere1.position.x = 1.5
     sphere1.material = grass1;
     sphere1.wireframe = true
 
     // Right
     var sphere2 = BABYLON.MeshBuilder.CreateSphere("sphere2", {}, scene);
+    sphere2.setParent(sphere0)
+    sphere2.position.x = 2.5
     sphere2.material = grass2;
-    sphere2.position.x = 1.5;
+    // sphere2.position.x = 1.5;
 
     const myRay = new BABYLON.Ray(new BABYLON.Vector3(1.1, 0, 1),
                                   new BABYLON.Vector3(0, 0, -2),
@@ -50,11 +54,13 @@ function doTheThing() {
     // console.log('2 intersect?', myRay.intersectsMesh(sphere2))
     // BABYLON.RayHelper.CreateAndShow(myRay, scene, new BABYLON.Color3(1, 1, 0.1))
     setTimeout(() => {
-      const rayHelper = new BABYLON.RayHelper(myRay);
-      rayHelper.show(scene);
-      const hit = scene.pickWithRay(myRay);
-      console.log('hit info:', hit.hit, hit.pickedMesh && hit.pickedMesh.id);
-    }, 0);
+      const rayHelper = new BABYLON.RayHelper(myRay)
+      rayHelper.show(scene)
+      const hit = scene.pickWithRay(myRay)
+      console.log('hit info:', hit.hit, hit.pickedMesh && hit.pickedMesh.id)
+      console.log('more hit info:', hit)
+      console.log('parent:', hit.pickedMesh.parent)
+    }, 0)
 
     return scene;
   }
