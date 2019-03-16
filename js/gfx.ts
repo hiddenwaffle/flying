@@ -8,7 +8,7 @@ function doTheThing() {
     var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2, Math.PI / 4, 5, BABYLON.Vector3.Zero(), scene);
     // const camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, -10), scene)
     // camera.setTarget(BABYLON.Vector3.Zero());
-    camera.attachControl(wrapper.canvas, true);
+    // camera.attachControl(wrapper.canvas, true);
 
     //Light direction is up and left
     var light = new BABYLON.HemisphericLight("hemiLight", new BABYLON.Vector3(-1, 1, 0), scene);
@@ -45,9 +45,36 @@ function doTheThing() {
     sphere2.material = grass2;
     // sphere2.position.x = 1.5;
 
-    const myRay = new BABYLON.Ray(new BABYLON.Vector3(1.1, 0, 1),
-                                  new BABYLON.Vector3(0, 0, -2),
-                                  1)
+    // Rotation Animation Example:
+    const testAnim = new BABYLON.Animation(
+      'testAnim',
+      'rotation.y',
+      60,
+      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODEL_CYCLE
+    )
+    testAnim.setKeys([
+      { frame: 0,
+        value: 0 },
+      { frame: 60,
+        value: Math.PI * 2.0 }
+    ])
+    sphere0.animations.push(testAnim)
+    scene.beginAnimation(
+      sphere0,
+      0,
+      120,
+      true
+    )
+    const easingFunction = new BABYLON.SineEase()
+    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN)
+    testAnim.setEasingFunction(easingFunction)
+
+    const myRay = new BABYLON.Ray(
+      new BABYLON.Vector3(1.1, 0, 1),
+      new BABYLON.Vector3(0, 0, -2),
+      1
+    )
     // console.log('myRay', myRay)
     // console.log('0 intersect?', myRay.intersectsMesh(sphere0))
     // console.log('1 intersect?', myRay.intersectsMesh(sphere1))
@@ -59,7 +86,7 @@ function doTheThing() {
       const hit = scene.pickWithRay(myRay)
       console.log('hit info:', hit.hit, hit.pickedMesh && hit.pickedMesh.id)
       console.log('more hit info:', hit)
-      console.log('parent:', hit.pickedMesh.parent)
+      console.log('parent:', hit.pickedMesh && hit.pickedMesh.parent)
     }, 0)
 
     return scene;
