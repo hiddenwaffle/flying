@@ -11,6 +11,5 @@ window.addEventListener('DOMContentLoaded', () => {
 })
 
 // TODO: Use this for client ID
-const arr = new Uint32Array(2)
-crypto.getRandomValues(arr)
-console.log('64-bit Random ID:', `${arr[0]}-${arr[1]}`)
+const id = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+console.log('Client ID:', id)
