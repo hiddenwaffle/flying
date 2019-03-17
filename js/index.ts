@@ -1,8 +1,8 @@
-import { db } from './database'
+import { db } from './old/database'
 import { environment } from './environment'
 
 // TODO: Something else with this
-import './ui'
+import './ui/ui'
 // import * as tmp from './index.html'
 
 window.addEventListener('DOMContentLoaded', () => {

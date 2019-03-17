@@ -42,7 +42,7 @@ const config = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './js/index.html'
+      template: './js/ui/index.html'
     }),
     new DefinePlugin({
       // TODO: https://github.com/dhis2/settings-app/pull/131

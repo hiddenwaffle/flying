@@ -1,6 +1,6 @@
 import * as grassPng from './grass2.png'
 import { wrapper } from './wrapper'
-import { ui } from './ui'
+import { ui } from '../ui/ui'
 
 function doTheThing() {
   const createScene = function () {
