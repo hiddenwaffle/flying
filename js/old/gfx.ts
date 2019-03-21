@@ -45,30 +45,78 @@ function doTheThing() {
     sphere2.material = grass2;
     // sphere2.position.x = 1.5;
 
-    // Rotation Animation Example:
-    const testAnim = new BABYLON.Animation(
-      'testAnim',
-      'rotation.y',
-      60,
-      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
-    )
-    testAnim.setKeys([
-      { frame: 0,
-        value: 0 },
-      { frame: 60,
-        value: Math.PI * 2.0 }
-    ])
-    sphere0.animations.push(testAnim)
-    scene.beginAnimation(
-      sphere0,
-      0,
-      120,
-      true
-    )
-    const easingFunction = new BABYLON.SineEase()
-    easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN)
-    testAnim.setEasingFunction(easingFunction)
+
+    // // Rotation Animation Example:
+    // const testAnim = new BABYLON.Animation(
+    //   'testAnim',
+    //   'rotation.y',
+    //   60,
+    //   BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    //   BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    // )
+    // testAnim.setKeys([
+    //   { frame: 0,
+    //     value: 0 },
+    //   { frame: 60,
+    //     value: Math.PI }
+    // ])
+    // sphere0.animations.push(testAnim)
+    // const testAnim2 = new BABYLON.Animation(
+    //   'testAnim2',
+    //   'rotation.z',
+    //   60,
+    //   BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    //   BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    // )
+    // testAnim2.setKeys([
+    //   { frame: 0,
+    //     value: 0 },
+    //   { frame: 60,
+    //     value: Math.PI }
+    // ])
+    // sphere0.animations.push(testAnim2)
+    // scene.beginAnimation(
+    //   sphere0,
+    //   0,
+    //   120,
+    //   true
+    // )
+    // const easingFunction = new BABYLON.SineEase()
+    // easingFunction.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN)
+    // testAnim.setEasingFunction(easingFunction)
+
+
+    // // Rotation with quaternions example
+    // const testAnim = new BABYLON.Animation(
+    //   'testAnim',
+    //   'rotationQuaternion',
+    //   60,
+    //   BABYLON.Animation.ANIMATIONTYPE_QUATERNION,
+    //   BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+    // )
+    // // const start = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, 0)
+    // // const end = BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI)
+    // const start = BABYLON.Quaternion.Identity()
+    // const end = BABYLON.Quaternion.Slerp(
+    //   // BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Y, Math.PI),
+    //   // BABYLON.Quaternion.RotationAxis(BABYLON.Axis.Z, Math.PI ),
+    //   BABYLON.Quaternion.RotationYawPitchRoll(Math.PI / 4, 0, 0), // yaw = y, pitch = x, roll = z
+    //   BABYLON.Quaternion.RotationYawPitchRoll(0, 0, Math.PI),
+    //   0.5)
+    // testAnim.setKeys([
+    //   { frame: 0,
+    //     value: start },
+    //   { frame: 60,
+    //     value: end }
+    // ])
+    // scene.beginDirectAnimation(
+    //   sphere0,
+    //   [testAnim],
+    //   0,
+    //   120,
+    //   true
+    // )
+
 
     const myRay = new BABYLON.Ray(
       new BABYLON.Vector3(1.1, 0, 1),
