@@ -51,7 +51,7 @@ function doTheThing() {
       'rotation.y',
       60,
       BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-      BABYLON.Animation.ANIMATIONLOOPMODEL_CYCLE
+      BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
     )
     testAnim.setKeys([
       { frame: 0,
