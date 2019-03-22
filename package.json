@@ -20,5 +20,9 @@
   "scripts": {
     "dev": "webpack-dev-server --mode development --hot",
     "build": "cross-env NODE_ENV=production webpack --mode production"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "tsyringe": "^3.0.1"
   }
 }

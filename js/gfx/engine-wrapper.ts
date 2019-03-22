@@ -1,4 +1,7 @@
-class Wrapper {
+import { injectable } from 'tsyringe'
+
+@injectable()
+export class EngineWrapper {
   canvas: HTMLCanvasElement
   engine: any
 
@@ -7,5 +10,3 @@ class Wrapper {
     this.engine = new BABYLON.Engine(this.canvas, true)
   }
 }
-
-export const wrapper = new Wrapper()

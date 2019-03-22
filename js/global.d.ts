@@ -5,5 +5,6 @@ declare const BABYLON: any
 // And use import * ... as ... to import images:
 // https://github.com/webpack-contrib/url-loader/issues/161#issuecomment-448569184
 declare module '*.png'
+declare module '*.jpg'
 
 // declare module '*.html'

@@ -8,7 +8,10 @@ const isProduction = process.env.NODE_ENV === 'production'
 const config = {
   entry: './js/index.ts',
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+    alias: {
+      'js': path.join(__dirname, 'js/')
+    }
   },
   output: {
     path: path.join(__dirname, '/dist'),
@@ -22,7 +25,7 @@ const config = {
         exclude: /node_modules/
       },
       {
-        test: /\.png$/,
+        test: /\.(png|jpg)$/,
         use: {
           loader: 'file-loader',
           options: {

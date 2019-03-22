@@ -1,10 +1,9 @@
 import './main.css'
-import { wrapper } from '../old/wrapper'
+import { injectable } from 'tsyringe'
+import { EngineWrapper } from 'js/gfx/engine-wrapper'
 
 const CONTAINER_ASPECT_WIDTH = 16;
 const CONTAINER_ASPECT_HEIGHT = 9;
-
-const linkToSource = <HTMLImageElement> document.getElementById('link-to-source')
 
 /**
  * Determine how much to scale the given logical rectangle
@@ -24,31 +23,39 @@ function calculateScaleFactor(
   return scaleFactor;
 }
 
-function scaleContainer(canvas, scaleFactor) {
+function scaleContainer(canvas: HTMLCanvasElement, scaleFactor: number) {
   const newWidth = Math.ceil(CONTAINER_ASPECT_WIDTH * scaleFactor);
   const newHeight = Math.ceil(CONTAINER_ASPECT_HEIGHT * scaleFactor);
   canvas.width = newWidth;
   canvas.height = newHeight;
 }
 
-function resizeHandler() {
+function resizeHandler(canvas: HTMLCanvasElement, engine: any) {
   const containerScaleFactor = calculateScaleFactor(
     window.innerWidth,
     window.innerHeight,
     CONTAINER_ASPECT_WIDTH,
     CONTAINER_ASPECT_HEIGHT
   )
-  scaleContainer(wrapper.canvas, containerScaleFactor);
-  wrapper.engine.resize()
+  scaleContainer(canvas, containerScaleFactor);
+  engine.resize()
 }
 
-class Ui {
-  constructor() { }
+@injectable()
+export class Ui {
+  private canvas: HTMLCanvasElement
+  private engine: any
 
-  doIt() {
-    window.addEventListener('resize', () => { resizeHandler() });
-    resizeHandler()
+  constructor(engineWrapper: EngineWrapper) {
+    this.canvas = engineWrapper.canvas
+    this.engine = engineWrapper.engine
+  }
+
+  start() {
+    const rh = () => {
+      resizeHandler(this.canvas, this.engine)
+    }
+    window.addEventListener('resize', rh);
+    rh()
   }
 }
-
-export const ui = new Ui()
