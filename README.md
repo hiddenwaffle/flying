@@ -22,7 +22,7 @@ yarn run build
 mv dist docs
 ```
 
-## Acknowledgements
+## Credits
 
 Skybox texture images are scaled down from: https://doc.babylonjs.com/resources/playground_textures#cubetextures
 
