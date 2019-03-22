@@ -41,32 +41,34 @@ export class Gfx {
       0, // -Math.PI / 2, // lon (e-w)
       Math.PI / 2, // Math.PI / 4, // lat (n-s)
       5,
-      new BABYLON.Vector3(0, 1, 0), // BABYLON.Vector3.Zero(),
+      new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
       scene
     )
     camera.attachControl(this.canvasTmp)
     const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
+    sphere0.position.y = 10
+    sphere0.position.z = -200
     camera.lockedTarget = sphere0
 
-    BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
-        var ease = new BABYLON.CubicEase();
-        ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-      BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation.' + axis, speed, 120, this.rotation[axis], this.rotation[axis]+rads, 0, ease);
-    }
-    BABYLON.ArcRotateCamera.prototype.spin = function (property: any, rads: any, speed: any) {
-        var ease = new BABYLON.CubicEase();
-        ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-      BABYLON.Animation.CreateAndStartAnimation('at4', this, property, speed, 120, this[property], this[property]+rads, 0, ease);
-    }
-    BABYLON.AbstractMesh.prototype.spinTo = function (unused: any, targetRot: any, speed: any) {
-        var ease = new BABYLON.CubicEase();
-        ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-      BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation', speed, 120, this.rotation, targetRot, 0, ease);
-    }
-    setTimeout(() => {
-      sphere0.spin('y', Math.PI / 4, 50)
-      camera.spin('alpha', -Math.PI / 4, 50)
-    }, 1000)
+    // BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
+    //     var ease = new BABYLON.CubicEase();
+    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation.' + axis, speed, 120, this.rotation[axis], this.rotation[axis]+rads, 0, ease);
+    // }
+    // BABYLON.ArcRotateCamera.prototype.spin = function (property: any, rads: any, speed: any) {
+    //     var ease = new BABYLON.CubicEase();
+    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, property, speed, 120, this[property], this[property]+rads, 0, ease);
+    // }
+    // BABYLON.AbstractMesh.prototype.spinTo = function (unused: any, targetRot: any, speed: any) {
+    //     var ease = new BABYLON.CubicEase();
+    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
+    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation', speed, 120, this.rotation, targetRot, 0, ease);
+    // }
+    // setTimeout(() => {
+    //   sphere0.spin('y', Math.PI / 4, 50)
+    //   camera.spin('alpha', -Math.PI / 4, 50)
+    // }, 1000)
 
     const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(-1, 1, 0), scene)
 
@@ -75,6 +77,7 @@ export class Gfx {
     groundMaterial.diffuseTexture = new BABYLON.Texture(fieldsImage, scene)
     groundMaterial.diffuseTexture.uScale = 25
     groundMaterial.diffuseTexture.vScale = 25
+    groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0) // Prevent shininess
     ground.material = groundMaterial
 
     const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
@@ -105,6 +108,7 @@ export class Gfx {
     )
 
     this.engine.runRenderLoop(() => {
+      // sphere0.position.z += 0.3
       scene.render()
     })
   }
