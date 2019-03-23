@@ -12,6 +12,10 @@ import * as skyPz from './textures/TropicalSunnyDay_pz.jpg'
 import * as fieldsImage from './textures/fields.jpg'
 
 import * as spaceshipFile0 from './models/spaceship0.babylon'
+import * as spaceshipFile1 from './models/spaceship1.babylon'
+import * as spaceshipFile2 from './models/spaceship2.babylon'
+import * as spaceshipFile3 from './models/spaceship3.babylon'
+import * as spaceshipFile4 from './models/spaceship4.babylon'
 
 @injectable()
 export class Gfx {
@@ -52,7 +56,36 @@ export class Gfx {
     sphere0.position.z = -5
     camera.lockedTarget = sphere0
 
-    BABYLON.SceneLoader.Append(spaceshipFile0, undefined, scene)
+    // BABYLON.SceneLoader.Append(spaceshipFile0, undefined, scene)
+    // BABYLON.SceneLoader.Append(spaceshipFile1, undefined, scene)
+    // BABYLON.SceneLoader.Append(spaceshipFile2, undefined, scene)
+    // BABYLON.SceneLoader.Append(spaceshipFile3, undefined, scene)
+    // BABYLON.SceneLoader.Append(spaceshipFile4, undefined, scene)
+    const assetsManager = new BABYLON.AssetsManager(scene)
+    const files = [
+      spaceshipFile0,
+      spaceshipFile1,
+      spaceshipFile2,
+      spaceshipFile3,
+      spaceshipFile4
+    ]
+    for (const [i, file] of files.entries()) {
+      const meshTask = assetsManager.addMeshTask(
+        'meshTask',
+        '',
+        '',
+        file
+      )
+      meshTask.onSuccess = (task: any) => {
+        console.log(task)
+        task.loadedMeshes[0].position = new BABYLON.Vector3(i * 2, i * 5, 1)
+        task.loadedMeshes[1].position = new BABYLON.Vector3(i * 2, i * 5, 1)
+      }
+      meshTask.onError = (task: any, message: string, exception: any) => {
+        console.log(message, exception)
+      }
+    }
+    assetsManager.load()
 
     // BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
     //     var ease = new BABYLON.CubicEase();
@@ -107,13 +140,13 @@ export class Gfx {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
 
-    const building0 = BABYLON.MeshBuilder.CreateBox(
-      'building0',
-      {
-        height: 10,
-        width: 2
-      }
-    )
+    // const building0 = BABYLON.MeshBuilder.CreateBox(
+    //   'building0',
+    //   {
+    //     height: 10,
+    //     width: 2
+    //   }
+    // )
 
     this.engine.runRenderLoop(() => {
       // sphere0.position.z += 0.3
