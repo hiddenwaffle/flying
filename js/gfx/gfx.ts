@@ -11,11 +11,8 @@ import * as skyPz from './textures/TropicalSunnyDay_pz.jpg'
 
 import * as fieldsImage from './textures/fields.jpg'
 
-import * as spaceshipFile0 from './models/spaceship0.babylon'
-import * as spaceshipFile1 from './models/spaceship1.babylon'
-import * as spaceshipFile2 from './models/spaceship2.babylon'
-import * as spaceshipFile3 from './models/spaceship3.babylon'
-import * as spaceshipFile4 from './models/spaceship4.babylon'
+import * as spaceshipFile from './models/spaceship.babylon'
+import * as planetFile from './models/planet.babylon'
 
 @injectable()
 export class Gfx {
@@ -34,6 +31,8 @@ export class Gfx {
     this.ui.start()
 
     const scene = new BABYLON.Scene(this.engine)
+
+
     // const camera = new BABYLON.ArcRotateCamera(
     //   'camera',
     //   0, // -Math.PI / 2, // lon (e-w)
@@ -44,48 +43,63 @@ export class Gfx {
     // )
     const camera = new BABYLON.ArcRotateCamera(
       'camera',
-      0, // -Math.PI / 2, // lon (e-w)
-      Math.PI / 2, // Math.PI / 4, // lat (n-s)
-      5,
+      Math.PI * (6/4), // -Math.PI / 2, // lon (e-w)
+      Math.PI * (1/4), // Math.PI / 4, // lat (n-s)
+      15,
       new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
       scene
     )
     camera.attachControl(this.canvasTmp)
     const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
-    sphere0.position.y = 5
-    sphere0.position.z = -5
+    sphere0.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
+    sphere0.position.y = 42.5
     camera.lockedTarget = sphere0
 
-    // BABYLON.SceneLoader.Append(spaceshipFile0, undefined, scene)
-    // BABYLON.SceneLoader.Append(spaceshipFile1, undefined, scene)
-    // BABYLON.SceneLoader.Append(spaceshipFile2, undefined, scene)
-    // BABYLON.SceneLoader.Append(spaceshipFile3, undefined, scene)
-    // BABYLON.SceneLoader.Append(spaceshipFile4, undefined, scene)
+
     const assetsManager = new BABYLON.AssetsManager(scene)
-    const files = [
-      spaceshipFile0,
-      spaceshipFile1,
-      spaceshipFile2,
-      spaceshipFile3,
-      spaceshipFile4
-    ]
-    for (const [i, file] of files.entries()) {
-      const meshTask = assetsManager.addMeshTask(
-        'meshTask',
-        '',
-        '',
-        file
-      )
-      meshTask.onSuccess = (task: any) => {
-        console.log(task)
-        task.loadedMeshes[0].position = new BABYLON.Vector3(i * 2, i * 5, 1)
-        task.loadedMeshes[1].position = new BABYLON.Vector3(i * 2, i * 5, 1)
-      }
-      meshTask.onError = (task: any, message: string, exception: any) => {
-        console.log(message, exception)
+
+
+    const spaceshipAddMeshTask = assetsManager.addMeshTask(
+      'spaceshipMesh',
+      '',
+      '',
+      spaceshipFile
+    )
+    spaceshipAddMeshTask.onSuccess = (task: any) => {
+      task.loadedMeshes[0].material.diffuseColor = new BABYLON.Color3(0.25, 0.5, 1)
+      for (const mesh of task.loadedMeshes) {
+        mesh.scaling = new BABYLON.Vector3(2, 2, 2)
+        mesh.parent = sphere0
+        mesh.position = new BABYLON.Vector3(0, 0, -50)
       }
     }
+    spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
+      console.log('ERROR', message, exception)
+    }
+
+
+    const sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', { }, scene)
+    console.log('POSITION', sphere1.position)
+    const planetMeshAddMeshTask = assetsManager.addMeshTask(
+      'planetMesh',
+      '',
+      '',
+      planetFile
+    )
+    let planetMeshes: any;
+    planetMeshAddMeshTask.onSuccess = (task: any) => {
+      planetMeshes = task.loadedMeshes
+      for (const mesh of task.loadedMeshes) {
+        mesh.scaling = new BABYLON.Vector3(3, 3, 3)
+        mesh.position = new BABYLON.Vector3(0, 0, 0)
+      }
+    }
+    planetMeshAddMeshTask.onError = (task: any, message: string, exception: any) => {
+      console.log('ERROR', message, exception)
+    }
+
     assetsManager.load()
+
 
     // BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
     //     var ease = new BABYLON.CubicEase();
@@ -113,13 +127,14 @@ export class Gfx {
       scene
     )
 
-    const ground = BABYLON.MeshBuilder.CreateGround('ground', { height: 1000, width: 1000 }, scene)
-    const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene)
-    groundMaterial.diffuseTexture = new BABYLON.Texture(fieldsImage, scene)
-    groundMaterial.diffuseTexture.uScale = 25
-    groundMaterial.diffuseTexture.vScale = 25
-    groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0) // Prevent shininess
-    ground.material = groundMaterial
+    // const ground = BABYLON.MeshBuilder.CreateGround('ground', { height: 1000, width: 1000 }, scene)
+    // const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene)
+    // groundMaterial.diffuseTexture = new BABYLON.Texture(fieldsImage, scene)
+    // groundMaterial.diffuseTexture.uScale = 10
+    // groundMaterial.diffuseTexture.vScale = 10
+    // groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0) // Prevent shininess
+    // ground.material = groundMaterial
+
 
     const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
     const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene)
@@ -139,6 +154,17 @@ export class Gfx {
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
+    // skybox.rotation.x = Math.PI * 2.2
+
+    // const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
+    // const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene)
+    // skyboxMaterial.backFaceCulling = false
+    // // skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE
+    // skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
+    // skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
+    // skyboxMaterial.emissiveColor = new BABYLON.Color3(0, 0.25, 0.5)
+    // skybox.material = skyboxMaterial
+
 
     // const building0 = BABYLON.MeshBuilder.CreateBox(
     //   'building0',
@@ -148,8 +174,17 @@ export class Gfx {
     //   }
     // )
 
+    let meow = -0.005
     this.engine.runRenderLoop(() => {
-      // sphere0.position.z += 0.3
+      // sphere0.position.z += 0.05
+      // skybox.rotation.x += 0.01
+      if (planetMeshes) {
+        for (const mesh of planetMeshes) {
+          mesh.rotate(BABYLON.Axis.X, meow, BABYLON.Space.WORLD)
+        }
+      } else {
+        console.log('wtf')
+      }
       scene.render()
     })
   }

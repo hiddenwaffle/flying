@@ -24,10 +24,14 @@ mv dist docs
 
 ## Credits
 
-Skybox texture images are scaled down from: https://doc.babylonjs.com/resources/playground_textures#cubetextures
+Skybox
+* Apache-2.0
+* https://doc.babylonjs.com/resources/playground_textures#cubetextures
 
-Ground texture image is a screenshot from: https://www.google.com/maps/@35.0822884,-101.5725602,8493m/data=!3m1!1e3
+Spaceship
+* CC0
+* https://quaternius.itch.io/lowpoly-spaceships
 
-Spaceship models from: https://quaternius.itch.io/lowpoly-spaceships
-
-Building models from: https://loki-mehra.itch.io/voxel-buildings
+Planet
+* GNU GPL v3.0
+* from: https://motherboardmage.itch.io/low-poly-planets
