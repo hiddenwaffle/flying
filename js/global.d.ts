@@ -6,5 +6,6 @@ declare const BABYLON: any
 // https://github.com/webpack-contrib/url-loader/issues/161#issuecomment-448569184
 declare module '*.png'
 declare module '*.jpg'
+declare module '*.babylon'
 
 // declare module '*.html'

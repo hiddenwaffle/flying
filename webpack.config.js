@@ -25,7 +25,7 @@ const config = {
         exclude: /node_modules/
       },
       {
-        test: /\.(png|jpg)$/,
+        test: /\.(png|jpg|babylon)$/,
         use: {
           loader: 'file-loader',
           options: {

@@ -11,6 +11,8 @@ import * as skyPz from './textures/TropicalSunnyDay_pz.jpg'
 
 import * as fieldsImage from './textures/fields.jpg'
 
+import * as spaceshipFile0 from './models/spaceship0.babylon'
+
 @injectable()
 export class Gfx {
   private engine: any
@@ -46,9 +48,11 @@ export class Gfx {
     )
     camera.attachControl(this.canvasTmp)
     const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
-    sphere0.position.y = 10
-    sphere0.position.z = -200
+    sphere0.position.y = 5
+    sphere0.position.z = -5
     camera.lockedTarget = sphere0
+
+    BABYLON.SceneLoader.Append(spaceshipFile0, undefined, scene)
 
     // BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
     //     var ease = new BABYLON.CubicEase();
@@ -70,7 +74,11 @@ export class Gfx {
     //   camera.spin('alpha', -Math.PI / 4, 50)
     // }, 1000)
 
-    const light = new BABYLON.HemisphericLight('light', new BABYLON.Vector3(-1, 1, 0), scene)
+    const light = new BABYLON.HemisphericLight(
+      'light',
+      new BABYLON.Vector3(-1, 1, -1), // TODO: Align with skybox sun?
+      scene
+    )
 
     const ground = BABYLON.MeshBuilder.CreateGround('ground', { height: 1000, width: 1000 }, scene)
     const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene)
