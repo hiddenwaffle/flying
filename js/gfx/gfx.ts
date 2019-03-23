@@ -9,9 +9,8 @@ import * as skyPx from './textures/TropicalSunnyDay_px.jpg'
 import * as skyPy from './textures/TropicalSunnyDay_py.jpg'
 import * as skyPz from './textures/TropicalSunnyDay_pz.jpg'
 
-import * as fieldsImage from './textures/fields.jpg'
-
 import * as spaceshipFile from './models/spaceship.babylon'
+
 import * as planetFile from './models/planet.babylon'
 
 @injectable()
@@ -33,19 +32,11 @@ export class Gfx {
     const scene = new BABYLON.Scene(this.engine)
 
 
-    // const camera = new BABYLON.ArcRotateCamera(
-    //   'camera',
-    //   0, // -Math.PI / 2, // lon (e-w)
-    //   Math.PI / 2, // Math.PI / 4, // lat (n-s)
-    //   5,
-    //   new BABYLON.Vector3(0, 1, 0), // BABYLON.Vector3.Zero(),
-    //   scene
-    // )
     const camera = new BABYLON.ArcRotateCamera(
       'camera',
       Math.PI * (6/4), // -Math.PI / 2, // lon (e-w)
       Math.PI * (1/4), // Math.PI / 4, // lat (n-s)
-      15,
+      178,
       new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
       scene
     )
@@ -57,7 +48,6 @@ export class Gfx {
 
 
     const assetsManager = new BABYLON.AssetsManager(scene)
-
 
     const spaceshipAddMeshTask = assetsManager.addMeshTask(
       'spaceshipMesh',
@@ -79,7 +69,6 @@ export class Gfx {
 
 
     const sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', { }, scene)
-    console.log('POSITION', sphere1.position)
     const planetMeshAddMeshTask = assetsManager.addMeshTask(
       'planetMesh',
       '',
@@ -127,14 +116,6 @@ export class Gfx {
       scene
     )
 
-    // const ground = BABYLON.MeshBuilder.CreateGround('ground', { height: 1000, width: 1000 }, scene)
-    // const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene)
-    // groundMaterial.diffuseTexture = new BABYLON.Texture(fieldsImage, scene)
-    // groundMaterial.diffuseTexture.uScale = 10
-    // groundMaterial.diffuseTexture.vScale = 10
-    // groundMaterial.specularColor = new BABYLON.Color3(0, 0, 0) // Prevent shininess
-    // ground.material = groundMaterial
-
 
     const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
     const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene)
@@ -154,37 +135,49 @@ export class Gfx {
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
-    // skybox.rotation.x = Math.PI * 2.2
 
-    // const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
-    // const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene)
-    // skyboxMaterial.backFaceCulling = false
-    // // skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE
-    // skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
-    // skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
-    // skyboxMaterial.emissiveColor = new BABYLON.Color3(0, 0.25, 0.5)
-    // skybox.material = skyboxMaterial
+    // sphere0.position = new BABYLON.Vector3(0, -42.5, 0)
+    // sphere0.lookAt(sphere1.position)
+    sphere0.parent = sphere1
 
+    let axis = new BABYLON.Vector3(1, 0, 0)
+    let angle = 0 // -Math.PI / 8
+    const quaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
+    sphere1.rotationQuaternion = quaternion
 
-    // const building0 = BABYLON.MeshBuilder.CreateBox(
-    //   'building0',
-    //   {
-    //     height: 10,
-    //     width: 2
-    //   }
-    // )
+    camera.rotationQuaterion = new BABYLON.Quaternion.RotationAxis(axis, angle)
+    camera.parent = sphere0
 
-    let meow = -0.005
+    // setTimeout(() => {
+    //   // axis = new BABYLON.Vector3(2, 2, 2)
+    //   // BABYLON.Quaternion.RotationAxisToRef(axis, angle, camera.rotationQuaternion)
+    //   axis = new BABYLON.Vector3(-1, 1, 1)
+    //   angle = Math.PI
+    //   camera.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
+    //   console.log('done?')
+    // }, 2000)
+
+    // setInterval(() => {
+    //   console.log(Date.now(), camera.alpha, camera.beta, camera.radius)
+    // }, 5000)
+
     this.engine.runRenderLoop(() => {
-      // sphere0.position.z += 0.05
-      // skybox.rotation.x += 0.01
-      if (planetMeshes) {
-        for (const mesh of planetMeshes) {
-          mesh.rotate(BABYLON.Axis.X, meow, BABYLON.Space.WORLD)
-        }
-      } else {
-        console.log('wtf')
-      }
+      // Naive demo version:
+      // sphere1.rotation.x += 0.01
+      // sphere0.rotation.z += 0.04
+
+      // Quaternion version:
+      angle += 0.01
+      // axis.x += 0.1
+      // axis.y += 0.1
+      // axis.z += 0.9
+      BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
+
+      // if (planetMeshes) {
+        // for (const mesh of planetMeshes) {
+        //   mesh.rotate(BABYLON.Axis.X, -0.005, BABYLON.Space.WORLD)
+        // }
+      // }
       scene.render()
     })
   }
