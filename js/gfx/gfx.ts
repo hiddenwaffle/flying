@@ -32,20 +32,29 @@ export class Gfx {
     const scene = new BABYLON.Scene(this.engine)
 
 
-    const camera = new BABYLON.ArcRotateCamera(
+    // const camera = new BABYLON.ArcRotateCamera(
+    //   'camera',
+    //   Math.PI * (6/4), // -Math.PI / 2, // lon (e-w)
+    //   Math.PI * (1/4), // Math.PI / 4, // lat (n-s)
+    //   178,
+    //   new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
+    //   scene
+    // )
+    const camera = new BABYLON.UniversalCamera(
       'camera',
-      Math.PI * (6/4), // -Math.PI / 2, // lon (e-w)
-      Math.PI * (1/4), // Math.PI / 4, // lat (n-s)
-      178,
-      new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
+      new BABYLON.Vector3(0, 0, 0),
       scene
     )
-    camera.attachControl(this.canvasTmp)
+    // camera.attachControl(this.canvasTmp)
     const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
     sphere0.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
     sphere0.position.y = 42.5
-    camera.lockedTarget = sphere0
-
+    // camera.lockedTarget = sphere0
+    camera.parent = sphere0
+    camera.position.x = 0 // TODO: Make dynamic
+    camera.position.y = 100
+    camera.position.z = -100 // TODO: Make dynamic
+    camera.setTarget(BABYLON.Vector3.Zero())
 
     const assetsManager = new BABYLON.AssetsManager(scene)
 
@@ -55,7 +64,9 @@ export class Gfx {
       '',
       spaceshipFile
     )
+    let spaceshipMeshes: any;
     spaceshipAddMeshTask.onSuccess = (task: any) => {
+      spaceshipMeshes = task.loadedMeshes
       task.loadedMeshes[0].material.diffuseColor = new BABYLON.Color3(0.25, 0.5, 1)
       for (const mesh of task.loadedMeshes) {
         mesh.scaling = new BABYLON.Vector3(2, 2, 2)
@@ -142,11 +153,11 @@ export class Gfx {
 
     let axis = new BABYLON.Vector3(1, 0, 0)
     let angle = 0 // -Math.PI / 8
-    const quaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
-    sphere1.rotationQuaternion = quaternion
+    sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
 
-    camera.rotationQuaterion = new BABYLON.Quaternion.RotationAxis(axis, angle)
-    camera.parent = sphere0
+    let axis2 = new BABYLON.Vector3(0, 0, 1)
+    let angle2 = 0
+    sphere0.rotationQuaterion = new BABYLON.Quaternion.RotationAxis(axis2, angle2)
 
     // setTimeout(() => {
     //   // axis = new BABYLON.Vector3(2, 2, 2)
@@ -157,9 +168,30 @@ export class Gfx {
     //   console.log('done?')
     // }, 2000)
 
-    // setInterval(() => {
-    //   console.log(Date.now(), camera.alpha, camera.beta, camera.radius)
-    // }, 5000)
+    setInterval(() => {
+      if (spaceshipMeshes) {
+        // console.log(BABYLON.Vector3.TransformCoordinates(sphere0.position, sphere0.getWorldMatrix()))
+        // TODO: Determine rotation of sphere to orient spaceship
+      }
+    }, 1000)
+
+    let before = new BABYLON.Vector3()
+    let after = new BABYLON.Vector3()
+    let diff = new BABYLON.Vector3()
+    const myRay = new BABYLON.Ray(
+      sphere0.position,
+      new BABYLON.Vector3(1, 0, 0),
+      20
+    )
+    BABYLON.RayHelper.CreateAndShow(myRay, scene, new BABYLON.Color3(1, 1, 0.1))
+    scene.registerBeforeRender(() => {
+      BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), before)
+    })
+    scene.registerAfterRender(() => {
+      BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), after)
+      after.subtractToRef(before, diff)
+      // camera.cameraDirection = diff.normalize()
+    })
 
     this.engine.runRenderLoop(() => {
       // Naive demo version:
@@ -170,8 +202,14 @@ export class Gfx {
       angle += 0.01
       // axis.x += 0.1
       // axis.y += 0.1
-      // axis.z += 0.9
+      // axis.z += 0.1
       BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
+
+      // angle2 += 0.01
+      // axis2.x += 0.1
+      // axis2.y += 0.1
+      // axis2.z += 0.1
+      // sphere0.rotationQuaternion = BABYLON.Quaternion.RotationAxis(axis2, angle2)
 
       // if (planetMeshes) {
         // for (const mesh of planetMeshes) {
