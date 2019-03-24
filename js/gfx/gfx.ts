@@ -31,6 +31,15 @@ export class Gfx {
 
     const scene = new BABYLON.Scene(this.engine)
 
+    // Keyboard input
+    const map: any = { } //object for multiple key presses
+    scene.actionManager = new BABYLON.ActionManager(scene);
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt: any) {
+      map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
+    }))
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt: any) {
+      map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
+    }))
 
     // const camera = new BABYLON.ArcRotateCamera(
     //   'camera',
@@ -53,8 +62,8 @@ export class Gfx {
     camera.parent = sphere0
     camera.position.x = 0 // TODO: Make dynamic
     camera.position.y = 100
-    camera.position.z = -100 // TODO: Make dynamic
-    camera.setTarget(BABYLON.Vector3.Zero())
+    camera.position.z = -60 // TODO: Make dynamic
+    camera.setTarget(new BABYLON.Vector3(0, 0, 40))
 
     const assetsManager = new BABYLON.AssetsManager(scene)
 
@@ -71,7 +80,7 @@ export class Gfx {
       for (const mesh of task.loadedMeshes) {
         mesh.scaling = new BABYLON.Vector3(2, 2, 2)
         mesh.parent = sphere0
-        mesh.position = new BABYLON.Vector3(0, 0, -50)
+        // mesh.position = new BABYLON.Vector3(0, 0, -50)
       }
     }
     spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
@@ -91,7 +100,7 @@ export class Gfx {
       planetMeshes = task.loadedMeshes
       for (const mesh of task.loadedMeshes) {
         mesh.scaling = new BABYLON.Vector3(3, 3, 3)
-        mesh.position = new BABYLON.Vector3(0, 0, 0)
+        // mesh.position = new BABYLON.Vector3(0, 0, 0)
       }
     }
     planetMeshAddMeshTask.onError = (task: any, message: string, exception: any) => {
@@ -155,43 +164,49 @@ export class Gfx {
     let angle = 0 // -Math.PI / 8
     sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
 
-    let axis2 = new BABYLON.Vector3(0, 0, 1)
-    let angle2 = 0
-    sphere0.rotationQuaterion = new BABYLON.Quaternion.RotationAxis(axis2, angle2)
+    // let axis2 = new BABYLON.Vector3(0, 0, 1)
+    // let angle2 = 0
+    // sphere0.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis2, angle2)
 
-    // setTimeout(() => {
-    //   // axis = new BABYLON.Vector3(2, 2, 2)
-    //   // BABYLON.Quaternion.RotationAxisToRef(axis, angle, camera.rotationQuaternion)
-    //   axis = new BABYLON.Vector3(-1, 1, 1)
-    //   angle = Math.PI
-    //   camera.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
-    //   console.log('done?')
-    // }, 2000)
 
-    setInterval(() => {
-      if (spaceshipMeshes) {
-        // console.log(BABYLON.Vector3.TransformCoordinates(sphere0.position, sphere0.getWorldMatrix()))
-        // TODO: Determine rotation of sphere to orient spaceship
-      }
-    }, 1000)
-
-    let before = new BABYLON.Vector3()
-    let after = new BABYLON.Vector3()
-    let diff = new BABYLON.Vector3()
-    const myRay = new BABYLON.Ray(
-      sphere0.position,
-      new BABYLON.Vector3(1, 0, 0),
-      20
-    )
-    BABYLON.RayHelper.CreateAndShow(myRay, scene, new BABYLON.Color3(1, 1, 0.1))
-    scene.registerBeforeRender(() => {
-      BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), before)
-    })
+    // let before = new BABYLON.Vector3()
+    // let after = new BABYLON.Vector3()
+    // let diff = new BABYLON.Vector3()
+    // const myRay = new BABYLON.Ray(
+    //   sphere0.position,
+    //   new BABYLON.Vector3(0, 0, 1),
+    //   20
+    // )
+    // BABYLON.RayHelper.CreateAndShow(myRay, scene, new BABYLON.Color3(1, 1, 0.1))
+    // scene.registerBeforeRender(() => {
+    //   BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), before)
+    // })
+    // scene.registerAfterRender(() => {
+    //   BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), after)
+    //   after.subtractToRef(before, diff)
+      // myRay.origin = sphere0.position
+      // myRay.direction = diff
+    //   myRay.length = 20
+    // })
     scene.registerAfterRender(() => {
-      BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), after)
-      after.subtractToRef(before, diff)
-      // camera.cameraDirection = diff.normalize()
+      // console.log('test', map.ArrowLeft)
+      if (map.ArrowLeft) {
+        axis.y -= 0.01
+      }
+      if (map.ArrowRight) {
+        axis.y += 0.01
+      }
+      if (map.ArrowUp) {
+        angle += 0.01
+      }
+      if (map.ArrowDown) {
+        angle -= 0.01
+      }
+      sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
+      // console.log(axis.y)
+      // console.log(sphere1.rotationQuaternion)
     })
+
 
     this.engine.runRenderLoop(() => {
       // Naive demo version:
@@ -199,7 +214,7 @@ export class Gfx {
       // sphere0.rotation.z += 0.04
 
       // Quaternion version:
-      angle += 0.01
+      // angle += 0.01
       // axis.x += 0.1
       // axis.y += 0.1
       // axis.z += 0.1
