@@ -41,20 +41,12 @@ export class Gfx {
       map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
     }))
 
-    // const camera = new BABYLON.ArcRotateCamera(
-    //   'camera',
-    //   Math.PI * (6/4), // -Math.PI / 2, // lon (e-w)
-    //   Math.PI * (1/4), // Math.PI / 4, // lat (n-s)
-    //   178,
-    //   new BABYLON.Vector3(0, 0, 1), // BABYLON.Vector3.Zero(),
-    //   scene
-    // )
     const camera = new BABYLON.UniversalCamera(
       'camera',
       new BABYLON.Vector3(0, 0, 0),
       scene
     )
-    // camera.attachControl(this.canvasTmp)
+    camera.attachControl(this.canvasTmp)
     const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
     sphere0.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
     sphere0.position.y = 42.5
@@ -80,7 +72,6 @@ export class Gfx {
       for (const mesh of task.loadedMeshes) {
         mesh.scaling = new BABYLON.Vector3(2, 2, 2)
         mesh.parent = sphere0
-        // mesh.position = new BABYLON.Vector3(0, 0, -50)
       }
     }
     spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
@@ -164,73 +155,59 @@ export class Gfx {
     let angle = 0 // -Math.PI / 8
     sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
 
-    // let axis2 = new BABYLON.Vector3(0, 0, 1)
-    // let angle2 = 0
-    // sphere0.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis2, angle2)
+    let yaxis = new BABYLON.Vector3(0, 1, 0)
+    let yangle = 0
+    sphere0.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(yaxis, yangle)
 
+    // const inbetween = BABYLON.MeshBuilder.CreateSphere('inbetween', { }, scene)
+    // var inbetweenMaterial = new BABYLON.StandardMaterial('inbetweenMaterial', scene);
+    // inbetweenMaterial.diffuseColor = new BABYLON.Color3(1, 0.5, 1);
+    // inbetweenMaterial.alpha = 0.3
+    // inbetween.material = inbetweenMaterial;
 
-    // let before = new BABYLON.Vector3()
-    // let after = new BABYLON.Vector3()
-    // let diff = new BABYLON.Vector3()
-    // const myRay = new BABYLON.Ray(
-    //   sphere0.position,
-    //   new BABYLON.Vector3(0, 0, 1),
-    //   20
-    // )
-    // BABYLON.RayHelper.CreateAndShow(myRay, scene, new BABYLON.Color3(1, 1, 0.1))
-    // scene.registerBeforeRender(() => {
-    //   BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), before)
-    // })
-    // scene.registerAfterRender(() => {
-    //   BABYLON.Vector3.TransformCoordinatesToRef(sphere0.position, sphere0.getWorldMatrix(), after)
-    //   after.subtractToRef(before, diff)
-      // myRay.origin = sphere0.position
-      // myRay.direction = diff
-    //   myRay.length = 20
-    // })
-    scene.registerAfterRender(() => {
-      // console.log('test', map.ArrowLeft)
-      if (map.ArrowLeft) {
-        axis.y -= 0.01
+    // var angle = Math.acos(BABYLON.Vector3.Dot(v1, v2));
+    // var axis = BABYLON.Vector3.Cross(v1,v2);
+    // var quaternion = BABYLON.Quaternion.RotationAxis(axis, angle);
+    // var matrix = BABYLON.Matrix.Identity();
+    // BABYLON.Matrix.FromQuaternionToRef(quaternion, matrix);
+
+    scene.registerBeforeRender(() => {
+      const cameraWorldPosition = BABYLON.Vector3.TransformCoordinates(camera.position, camera.parent.getWorldMatrix())
+      const sphere0WorldPosition = BABYLON.Vector3.TransformCoordinates(sphere0.position, sphere0.parent.getWorldMatrix())
+      // inbetween.position = cameraWorldPosition.add(sphere0WorldPosition).scale(0.5)
+      console.clear()
+      console.log('camera   ', cameraWorldPosition)
+      // console.log('inbetween', inbetween.position)
+      console.log('sphere0  ', sphere0WorldPosition)
+      console.log('---')
+      // const diff = cameraWorldPosition.subtract(sphere0WorldPosition)
+      // console.log('diff     ', diff)
+      console.log('sphere1.rotationQuaternion', sphere1.rotationQuaternion)
+      console.log('---')
+      console.log('axis ', axis)
+      console.log('angle', angle)
+
+      if (map['a']) {
+        // TODO: I think what this actually needs to do is rotate the "axis" variable
+        // in such a way that it represents rotatin the axis around the current normal
+        // of the spaceship above the origin
+        // But where does a quaternion start its rotation?
+        yangle -= 0.01
+        BABYLON.Quaternion.RotationAxisToRef(yaxis, yangle, sphere0.rotationQuaternion)
+        // Try to reset the main quaternion starting from the current position...
+        axis = BABYLON.Vector3.Cross(cameraWorldPosition, sphere0WorldPosition)
+        angle = 0 // TODO: Where does angle 0 start?
+        BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
       }
-      if (map.ArrowRight) {
-        axis.y += 0.01
+      if (map['d']) {
       }
-      if (map.ArrowUp) {
+      if (map['w']) {
         angle += 0.01
+        BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
       }
-      if (map.ArrowDown) {
-        angle -= 0.01
-      }
-      sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
-      // console.log(axis.y)
-      // console.log(sphere1.rotationQuaternion)
     })
 
-
     this.engine.runRenderLoop(() => {
-      // Naive demo version:
-      // sphere1.rotation.x += 0.01
-      // sphere0.rotation.z += 0.04
-
-      // Quaternion version:
-      // angle += 0.01
-      // axis.x += 0.1
-      // axis.y += 0.1
-      // axis.z += 0.1
-      BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
-
-      // angle2 += 0.01
-      // axis2.x += 0.1
-      // axis2.y += 0.1
-      // axis2.z += 0.1
-      // sphere0.rotationQuaternion = BABYLON.Quaternion.RotationAxis(axis2, angle2)
-
-      // if (planetMeshes) {
-        // for (const mesh of planetMeshes) {
-        //   mesh.rotate(BABYLON.Axis.X, -0.005, BABYLON.Space.WORLD)
-        // }
-      // }
       scene.render()
     })
   }
