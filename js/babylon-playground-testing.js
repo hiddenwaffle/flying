@@ -69,7 +69,11 @@ var createScene = function () {
         ship.position,
         dest.position
     )
-    var plane = BABYLON.MeshBuilder.CreatePlane('plane', { sourcePlane: sourcePlane, size: 2.5 }, scene)
+    var plane = BABYLON.MeshBuilder.CreatePlane(
+        'plane',
+        { sourcePlane: sourcePlane, size: 2.5, updatable: true },
+        scene
+    )
     var planeMaterial = new BABYLON.StandardMaterial('planeMaterial', scene)
     planeMaterial.diffuseColor = new BABYLON.Color3(0.25, 1, 0.25)
     planeMaterial.alpha = 0.4
@@ -88,11 +92,6 @@ var createScene = function () {
     // Start halfway at ship, go to dest
     getCartToRef(radius, theta, phi, halfway.position)
 
-    // // Determine animation direction (Quaternion)
-    // const axis = BABYLON.Vector3.Cross(ship.position, dest.position)
-    // let angle = 0
-    // halfway.rotationQuaternion = new BABYLON.Quaternion()
-
     let beginRotate = false
     setTimeout(() => {
         // http://www.html5gamedevs.com/topic/21494-keep-childs-world-position-when-parenting/
@@ -102,22 +101,15 @@ var createScene = function () {
         beginRotate = true
     }, 2000)
 
-    // TODO: Use plane's copyFromPoints() to reorient the plane
-
     scene.beforeRender = () => {
         if (beginRotate) {
             plane.rotation.z += 0.01
         }
-        // angle += 0.01
-        // BABYLON.Quaternion.RotationAxisToRef(axis, angle, halfway.rotationQuaternion)
-        console.clear()
-        console.log('theta     ', theta)
-        console.log('destTheta ', destTheta)
-        console.log('phi       ', phi)
-        console.log('destPhi   ', destPhi)
-        // console.log('axis      ', axis)
-        // console.log('angle     ', angle)
-        // console.log('quaternion', halfway.rotationQuaternion)
+        // console.clear()
+        // console.log('theta     ', theta)
+        // console.log('destTheta ', destTheta)
+        // console.log('phi       ', phi)
+        // console.log('destPhi   ', destPhi)
     }
 
     // TODO: Attach dest to plane, rotate, then unattach?
