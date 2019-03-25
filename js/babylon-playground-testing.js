@@ -80,6 +80,12 @@ var createScene = function () {
     planeMaterial.backFaceCulling = false
     plane.material = planeMaterial
 
+    // Origin sphere at 0, 0, 0
+    var origin = BABYLON.MeshBuilder.CreateSphere('halfway', { segments: 16 }, scene);
+    origin.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
+    origin.bakeCurrentTransformIntoVertices()
+    origin.rotationQuaternion = new BABYLON.Quaternion()
+
     // Halfway point
     var halfway = BABYLON.MeshBuilder.CreateSphere('halfway', { segments: 16 }, scene);
     halfway.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
@@ -88,28 +94,20 @@ var createScene = function () {
     halfwayMaterial.diffuseColor = new BABYLON.Color3(0.5, 0, 0.5)
     halfwayMaterial.alpha = 0.8
     halfway.material = halfwayMaterial
+    halfway.parent = origin
 
-    // Start halfway at ship, go to dest
+    // Start halfway at ship
     getCartToRef(radius, theta, phi, halfway.position)
-
-    let beginRotate = false
-    setTimeout(() => {
-        // http://www.html5gamedevs.com/topic/21494-keep-childs-world-position-when-parenting/
-        const original = halfway.getAbsolutePosition()
-        halfway.parent = plane
-        halfway.setAbsolutePosition(original)
-        beginRotate = true
-    }, 2000)
+    // Set origin rotation direction to go towards dest
+    const axis = BABYLON.Vector3.Cross(ship.position, dest.position).normalize()
+    let angle = 0
 
     scene.beforeRender = () => {
-        if (beginRotate) {
-            plane.rotation.z += 0.01
-        }
-        // console.clear()
-        // console.log('theta     ', theta)
-        // console.log('destTheta ', destTheta)
-        // console.log('phi       ', phi)
-        // console.log('destPhi   ', destPhi)
+        angle += 0.01
+        BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
+        console.clear()
+        console.log('axis ', axis)
+        console.log('angle', angle)
     }
 
     // TODO: Attach dest to plane, rotate, then unattach?
