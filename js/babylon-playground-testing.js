@@ -1,12 +1,12 @@
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
-function getCart(radius, theta, phi, ref) {
+function getCartToRef(radius, theta, phi, ref) {
 	var lat = theta;
 	var lon = phi;
-	var x = radius * Math.cos(lat)*Math.cos(lon);
-	var y = radius * Math.cos(lat)*Math.sin(lon);
+	var x = radius * Math.cos(lat) * Math.cos(lon);
+	var y = radius * Math.cos(lat) * Math.sin(lon);
 	var z = radius * Math.sin(lat);
-	return ref.set(x,y,z);
+	return ref.set(x, y, z);
 }
 
 var createScene = function () {
@@ -48,7 +48,7 @@ var createScene = function () {
     dest.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
     dest.bakeCurrentTransformIntoVertices()
     var destMaterial = new BABYLON.StandardMaterial('destMaterial', scene)
-    destMaterial.diffuseColor = new BABYLON.Color3(5.0, 0, 1)
+    destMaterial.diffuseColor = new BABYLON.Color3(1.0, 0, 1)
     destMaterial.alpha = 0.8
     dest.material = destMaterial
 
@@ -56,12 +56,12 @@ var createScene = function () {
     var radius = 1
     var theta = Math.random() * 2 * Math.PI
     var phi = Math.acos(Math.random() * 2 - 1)
-    getCart(radius, theta, phi, ship.position)
+    getCartToRef(radius, theta, phi, ship.position)
 
     // Starting direction
     var destTheta = Math.random() * 2 * Math.PI
     var destPhi = Math.acos(Math.random() * 2 - 1)
-    getCart(radius, destTheta, destPhi, dest.position)
+    getCartToRef(radius, destTheta, destPhi, dest.position)
 
     // Plane
     var sourcePlane = BABYLON.Plane.FromPoints(
@@ -77,9 +77,6 @@ var createScene = function () {
     plane.material = planeMaterial
 
     scene.beforeRender = () => {
-        // theta += 0.01
-        // phi += 0.01
-        getCart(radius, theta, phi, ship.position)
     }
 
     return scene;

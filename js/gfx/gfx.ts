@@ -196,7 +196,7 @@ export class Gfx {
         BABYLON.Quaternion.RotationAxisToRef(yaxis, yangle, sphere0.rotationQuaternion)
         // Try to reset the main quaternion starting from the current position...
         axis = BABYLON.Vector3.Cross(cameraWorldPosition, sphere0WorldPosition)
-        angle = 0 // TODO: Where does angle 0 start?
+        // angle = 0 // TODO: Where does angle 0 start?
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
       }
       if (map['d']) {
@@ -206,6 +206,8 @@ export class Gfx {
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
       }
     })
+
+    // TODO: Try rotating world around and using that to store position?
 
     this.engine.runRenderLoop(() => {
       scene.render()
