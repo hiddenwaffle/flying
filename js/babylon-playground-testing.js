@@ -1,5 +1,6 @@
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
+// TODO: Is this left-handed or right-handed? Because z = r * sin instead of r * cos...
 function getCartToRef(radius, theta, phi, ref) {
 	var lat = theta;
 	var lon = phi;
@@ -10,6 +11,8 @@ function getCartToRef(radius, theta, phi, ref) {
 }
 
 var createScene = function () {
+    console.clear()
+
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 2, -3), scene);
     camera.speed = 0.25
@@ -36,12 +39,13 @@ var createScene = function () {
     ship.material = shipMaterial
 
     // Point toward front of ship
+    var rayLength = 0.3
     var localMeshOrigin = new BABYLON.Vector3(0, 0, -0.04)
     var localMeshDirection = new BABYLON.Vector3(0, 0, 1)
-    var ray = new BABYLON.Ray(localMeshOrigin, localMeshDirection, 0.3);
+    var ray = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
     var rayHelper = new BABYLON.RayHelper(ray);
     rayHelper.show(scene);
-    rayHelper.attachToMesh(ship, localMeshDirection, localMeshOrigin, 0.3)
+    rayHelper.attachToMesh(ship, localMeshDirection, localMeshOrigin, rayLength)
 
     // Destination
     var dest = BABYLON.MeshBuilder.CreateSphere('dest', { segments: 16 }, scene);
@@ -102,15 +106,37 @@ var createScene = function () {
     const axis = BABYLON.Vector3.Cross(ship.position, dest.position).normalize()
     let angle = 0
 
+    // TODO: Have look the direction of the dest
+    const halfwayPosition1 = BABYLON.Vector3.TransformCoordinates(halfway.position, halfway.parent.getWorldMatrix())
+    console.log('before   ', halfwayPosition1)
+    angle += 0.05
+    BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
+    setTimeout(() => {
+        const halfwayPosition2 = BABYLON.Vector3.TransformCoordinates(halfway.position, halfway.parent.getWorldMatrix())
+        console.log('after   ', halfwayPosition2)
+        const diffvec = halfwayPosition2.subtract(halfwayPosition1).normalize()
+        console.log('diffvec ', diffvec)
+
+        // Show diff vector
+        var diffRay = new BABYLON.Ray(ship.position, diffvec, 0.3)
+        var diffRayHelper = new BABYLON.RayHelper(diffRay)
+        diffRayHelper.show(scene, new BABYLON.Color3(1, 0, 1))
+    }, 0)
+
+    // TODO: The bottom of ship should face the origin
+    // TODO: Then have ship rotate around axis from origin to cube, "a" and "d"
+    // TODO: "w" and "s" have the ship move in that direction, and then be brought down the plane
+
     scene.beforeRender = () => {
+        // Run the "halfway" sphere along the geodesic
         angle += 0.01
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
-        console.clear()
-        console.log('axis ', axis)
-        console.log('angle', angle)
-    }
 
-    // TODO: Attach dest to plane, rotate, then unattach?
+        // TODO: This ought to rotate in world space around the vector from origin to ship, but
+        //       that depends on how the ship is being positioned at any given point. The bottom of
+        //       the ship should face the origin before this line runs.
+        ship.rotation.y += 0.01
+    }
 
     return scene;
 };
