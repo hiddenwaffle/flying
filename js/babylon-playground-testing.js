@@ -102,6 +102,8 @@ var createScene = function () {
         beginRotate = true
     }, 2000)
 
+    // TODO: Use plane's copyFromPoints() to reorient the plane
+
     scene.beforeRender = () => {
         if (beginRotate) {
             plane.rotation.z += 0.01
