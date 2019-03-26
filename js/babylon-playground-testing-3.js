@@ -1,5 +1,3 @@
-// This mostly works, but you get sucked into the poles
-
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
 // TODO: Is this left-handed or right-handed? Because z = r * sin instead of r * cos...
@@ -108,8 +106,11 @@ var createScene = function () {
 
 
         if (map['w']) {
-            // Calculate moving in the current direction one frame (TODO: Use time)
-            ship.translate(new BABYLON.Vector3(0, 0, 1).normalize(), 0.1, BABYLON.Space.LOCAL);
+            // Calculate moving in the current direction one frame
+            // --> TODO: MUST use geodesic because translating it this way:
+            // --> ship.translate(new BABYLON.Vector3(0, 0, 1).normalize(), 0.1, BABYLON.Space.LOCAL);
+            // --> causes the ship to whirlpool into the poles, probably due to the local YZ angles?
+            // TODO: Do it
 
             // "drop" the ship towards the origin so it is the expected distance away.
             // Good thing 1 is the distance used here, can just normalize...
