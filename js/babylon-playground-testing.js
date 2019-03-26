@@ -66,14 +66,13 @@ var createScene = function () {
     top.parent = ship
 
     // Point toward front of ship
-    // It goes -z because mesh.lookAt() points towards -z
     var ray = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
     var rayHelper = new BABYLON.RayHelper(ray);
     rayHelper.show(scene);
     rayHelper.attachToMesh(
         ship,
-        new BABYLON.Vector3(0, 0, -1), // direction in local mesh
-        new BABYLON.Vector3(0, 0, -0.04), // origin in local mesh
+        new BABYLON.Vector3(0, 0, 1), // direction in local mesh
+        new BABYLON.Vector3(0, 0, 0.04), // origin in local mesh
         0.3 // length
     )
 
@@ -145,10 +144,11 @@ var createScene = function () {
     let applyRotation = false
     let quaternionAfterAlignWithNormalCall = null
     let myAngle = 0
+    let diffvec = null
     setTimeout(() => {
         const halfwayPosition2 = BABYLON.Vector3.TransformCoordinates(halfway.position, halfway.parent.getWorldMatrix())
         console.log('after   ', halfwayPosition2)
-        const diffvec = halfwayPosition2.subtract(halfwayPosition1).normalize()
+        diffvec = halfwayPosition2.subtract(halfwayPosition1).normalize()
         console.log('diffvec ', diffvec)
 
         // Show diff vector
@@ -182,9 +182,17 @@ var createScene = function () {
 
         if (map['a']) {
             myAngle -= 0.01
+            console.log('ship    ', ship.getDirection(BABYLON.Axis.Z))
+            if (diffvec) {
+                console.log('diffvec ', diffvec)
+            }
         }
         if (map['d']) {
             myAngle += 0.01
+            console.log('ship    ', ship.getDirection(BABYLON.Axis.Z))
+            if (diffvec) {
+                console.log('diffvec ', diffvec)
+            }
         }
     }
 
