@@ -88,29 +88,27 @@ var createScene = function () {
 
     const scratch = new BABYLON.Quaternion()
     const scratch2 = new BABYLON.Quaternion()
-    const scratchVector = new BABYLON.Vector3()
-    const myAxis = new BABYLON.Vector3()
     scene.beforeRender = () => {
         // Multiply rotation around origin to ship ("turning") and the one that
         // "straightened" the ship top to be out from origin (alignWithNormal call)
 
-        // Re-straighten the ship
-        ship.position.normalizeToRef(myAxis) // TODO: Does copy matter? And does normalization matter?
-        ship.alignWithNormal(myAxis)
+        // Ensure that the ship is straight
+        ship.position.normalizeToRef(ship.position) // TODO: Does copy matter? And does normalization matter?
+        ship.alignWithNormal(ship.position)
         scratch2.copyFrom(ship.rotationQuaternion)
 
-        // Combine the quaternions into the ship's quaternion
-        BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
+        // Combine both quaternions into the ship's quaternion
+        BABYLON.Quaternion.RotationAxisToRef(ship.position, myAngle, scratch)
         scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
-
-
 
         if (map['w']) {
             // Calculate moving in the current direction one frame
-            // --> TODO: MUST use geodesic because translating it this way:
-            // --> ship.translate(new BABYLON.Vector3(0, 0, 1).normalize(), 0.1, BABYLON.Space.LOCAL);
+            // --> TODO: MUST use a target point on the geodesic because translating it this way:
+            // ship.translate(new BABYLON.Vector3(0, 0, 1).normalize(), 0.1, BABYLON.Space.LOCAL);
             // --> causes the ship to whirlpool into the poles, probably due to the local YZ angles?
-            // TODO: Do it
+            // TODO: Rotate the origin axis one step, get the world position of the dest and move
+            //       the ship onto this new world position
+
 
             // "drop" the ship towards the origin so it is the expected distance away.
             // Good thing 1 is the distance used here, can just normalize...
@@ -119,10 +117,12 @@ var createScene = function () {
 
         if (map['a']) {
             myAngle -= 0.01
+            // TODO: Orient the origin's rotation axis to be perpendicular to the ship facing vector?
+            //       and reset the
         }
-        if (map['d']) {
-            myAngle += 0.01
-        }
+        // if (map['d']) {
+        //     myAngle += 0.01
+        // }
     }
 
     return scene;
