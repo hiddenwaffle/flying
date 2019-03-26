@@ -40,7 +40,7 @@ var createScene = function () {
     var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 0.7;
 
-    // Params: name, subdivs, size, scene
+    // World sphere
     var sphere = BABYLON.MeshBuilder.CreateSphere('sphere1', { segments: 16 }, scene);
     sphere.scaling = new BABYLON.Vector3(2, 2, 2)
     sphere.bakeCurrentTransformIntoVertices()
@@ -49,7 +49,13 @@ var createScene = function () {
     sphereMaterial.wireframe = true;
     sphere.material = sphereMaterial;
 
-    // The box with the ray facing front
+    // Origin sphere at 0, 0, 0
+    var origin = BABYLON.MeshBuilder.CreateSphere('origin', { segments: 16 }, scene);
+    origin.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
+    origin.bakeCurrentTransformIntoVertices()
+    origin.rotationQuaternion = new BABYLON.Quaternion()
+
+    // "Ship" - the box with the ray facing front
     var ship = BABYLON.MeshBuilder.CreateBox('ship', { }, scene);
     ship.scaling = new BABYLON.Vector3(0.1, 0.02, 0.1)
     ship.bakeCurrentTransformIntoVertices()
@@ -76,18 +82,28 @@ var createScene = function () {
         0.3 // length
     )
 
-    // Starting position
+    // Ship's starting position
     var radius = 1
     var theta = Math.random() * 2 * Math.PI
     var phi = Math.acos(Math.random() * 2 - 1)
     getCartToRef(radius, theta, phi, ship.position)
 
-    let applyRotation = false
-    let myAngle = 0
-    let diffvec = null
+    // "guide" sphere
+    var guide = BABYLON.MeshBuilder.CreateSphere('halfway', { segments: 16 }, scene);
+    guide.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
+    guide.bakeCurrentTransformIntoVertices()
+    var guideMaterial = new BABYLON.StandardMaterial('guideMaterial', scene)
+    guideMaterial.diffuseColor = new BABYLON.Color3(0.75, 0.25, 0.5)
+    guideMaterial.alpha = 0.8
+    guide.material = guideMaterial
 
+    let originAngle = 0
+    let originAxis = new BABYLON.Vector3()
+
+    let myAngle = 0
     const scratch = new BABYLON.Quaternion()
     const scratch2 = new BABYLON.Quaternion()
+    const scratchVector = new BABYLON.Vector3()
     scene.beforeRender = () => {
         // Multiply rotation around origin to ship ("turning") and the one that
         // "straightened" the ship top to be out from origin (alignWithNormal call)
@@ -102,26 +118,45 @@ var createScene = function () {
         scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
 
         if (map['w']) {
-            // Calculate moving in the current direction one frame
-            // --> TODO: MUST use a target point on the geodesic because translating it this way:
-            // ship.translate(new BABYLON.Vector3(0, 0, 1).normalize(), 0.1, BABYLON.Space.LOCAL);
-            // --> causes the ship to whirlpool into the poles, probably due to the local YZ angles?
-            // TODO: Rotate the origin axis one step, get the world position of the dest and move
-            //       the ship onto this new world position
-
-
-            // "drop" the ship towards the origin so it is the expected distance away.
-            // Good thing 1 is the distance used here, can just normalize...
-            ship.position.normalize()
+            originAngle += 0.05
+            BABYLON.Quaternion.RotationAxisToRef(originAxis, originAngle, origin.rotationQuaternion)
         }
 
-        if (map['a']) {
-            myAngle -= 0.01
-            // TODO: Orient the origin's rotation axis to be perpendicular to the ship facing vector?
-            //       and reset the
+        if (map['a'] || map['d']) {
+            if (map['a']) {
+                myAngle -= 0.05
+            }
+            if (map['d']) {
+                myAngle += 0.05
+            }
+
+            // "Bake" the current ship position (I think that is the term?) if the origin sphere was rotating it.
+            if (ship.parent) {
+                BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
+                ship.parent = null
+                ship.position.copyFrom(scratchVector)
+                console.log(ship.position)
+            }
+
+            // Starting from this position, calculate the turn
+            originAngle = 0
+            // Reset guide sphere to be in front of the ship, but also still on the sphere
+            guide.position.copyFrom(ship.position)
+            ship.getDirectionToRef(BABYLON.Axis.Z, scratchVector)
+            scratchVector.scaleInPlace(0.3) // Only to be able to see it well when debug is on, could remove this
+            guide.position.addInPlace(scratchVector)
+            // NOTE: From the other playground: Set origin rotation direction to go towards dest
+            BABYLON.Vector3.CrossToRef(ship.position, guide.position, originAxis)
+            originAxis.normalize()
+            ship.parent = origin
+            BABYLON.Quaternion.RotationAxisToRef(originAxis, originAngle, origin.rotationQuaternion)
         }
-        // if (map['d']) {
-        //     myAngle += 0.01
+    }
+    scene.afterRender = () => {
+        // if (map['a'] || map['d']) {
+        //     BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
+        //     ship.parent = null
+        //     ship.position.copyFrom(scratchVector)
         // }
     }
 
