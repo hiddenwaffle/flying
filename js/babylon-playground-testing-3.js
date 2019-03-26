@@ -104,24 +104,8 @@ var createScene = function () {
     const scratch = new BABYLON.Quaternion()
     const scratch2 = new BABYLON.Quaternion()
     const scratchVector = new BABYLON.Vector3()
-    scene.beforeRender = () => {
-        // Multiply rotation around origin to ship ("turning") and the one that
-        // "straightened" the ship top to be out from origin (alignWithNormal call)
 
-        // Ensure that the ship is straight
-        ship.position.normalizeToRef(ship.position) // TODO: Does copy matter? And does normalization matter?
-        ship.alignWithNormal(ship.position)
-        scratch2.copyFrom(ship.rotationQuaternion)
-
-        // Combine both quaternions into the ship's quaternion
-        BABYLON.Quaternion.RotationAxisToRef(ship.position, myAngle, scratch)
-        scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
-
-        if (map['w']) {
-            originAngle += 0.05
-            BABYLON.Quaternion.RotationAxisToRef(originAxis, originAngle, origin.rotationQuaternion)
-        }
-
+    scene.afterRender = () => {
         if (map['a'] || map['d']) {
             if (map['a']) {
                 myAngle -= 0.05
@@ -130,12 +114,13 @@ var createScene = function () {
                 myAngle += 0.05
             }
 
-            // "Bake" the current ship position (I think that is the term?) if the origin sphere was rotating it.
+            // "Bake" ( I think that is the term?) position of where the ship was rotated to
             if (ship.parent) {
+                // Bake the current ship position
                 BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
                 ship.parent = null
                 ship.position.copyFrom(scratchVector)
-                console.log(ship.position)
+                // TODO: Bake the rotation...?
             }
 
             // Starting from this position, calculate the turn
@@ -145,20 +130,36 @@ var createScene = function () {
             ship.getDirectionToRef(BABYLON.Axis.Z, scratchVector)
             scratchVector.scaleInPlace(0.3) // Only to be able to see it well when debug is on, could remove this
             guide.position.addInPlace(scratchVector)
-            // NOTE: From the other playground: Set origin rotation direction to go towards dest
+            // Set origin rotation direction to go towards dest
             BABYLON.Vector3.CrossToRef(ship.position, guide.position, originAxis)
             originAxis.normalize()
             ship.parent = origin
             BABYLON.Quaternion.RotationAxisToRef(originAxis, originAngle, origin.rotationQuaternion)
         }
+        // Multiply rotation around origin to ship ("turning") and the one that
+        // "straightened" the ship top to be out from origin (alignWithNormal call)
+
+        // Ensure that the ship is straight
+        ship.position.normalizeToRef(ship.position) // TODO: Does copy matter? And does normalization matter?
+        ship.alignWithNormal(ship.position)
+        scratch2.copyFrom(ship.rotationQuaternion)
+        // Combine both quaternions into the ship's quaternion
+        BABYLON.Quaternion.RotationAxisToRef(ship.position, myAngle, scratch)
+        scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
+
+        if (map['w']) {
+            console.log('w', ship.getDirection(BABYLON.Axis.Z))
+            originAngle += 0.05
+            BABYLON.Quaternion.RotationAxisToRef(originAxis, originAngle, origin.rotationQuaternion)
+        }
     }
-    scene.afterRender = () => {
-        // if (map['a'] || map['d']) {
-        //     BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
-        //     ship.parent = null
-        //     ship.position.copyFrom(scratchVector)
-        // }
-    }
+    // scene.afterRender = () => {
+    //     if (map['a'] || map['d']) {
+    //         BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
+    //         ship.parent = null
+    //         ship.position.copyFrom(scratchVector)
+    //     }
+    // }
 
     return scene;
 };
