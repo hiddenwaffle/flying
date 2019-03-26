@@ -133,7 +133,6 @@ var createScene = function () {
 
     let doRotation = false
     let quaternionAfterAlignWithNormalCall = null
-    let myAxis = new BABYLON.Vector3(0, 1, 0)
     let myAngle = 0
     setTimeout(() => {
         const halfwayPosition2 = BABYLON.Vector3.TransformCoordinates(halfway.position, halfway.parent.getWorldMatrix())
@@ -161,8 +160,10 @@ var createScene = function () {
     // TODO: "w" and "s" have the ship move in that direction, and then be brought down the plane
 
     const scratch = new BABYLON.Quaternion()
+    const myAxis = new BABYLON.Vector3()
     scene.beforeRender = () => {
         if (doRotation) {
+            ship.position.normalizeToRef(myAxis)
             myAngle += 0.01
             BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
             scratch.multiplyToRef(quaternionAfterAlignWithNormalCall, ship.rotationQuaternion)
