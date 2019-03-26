@@ -163,7 +163,7 @@ var createScene = function () {
         // Maybe use acos and dot to get angle between the vectors: http://www.html5gamedevs.com/topic/29839-rotation-between-two-unit-vectors/
         applyRotation = true
         quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
-    }, 500)
+    }, 0)
 
     const scratch = new BABYLON.Quaternion()
     const myAxis = new BABYLON.Vector3()
