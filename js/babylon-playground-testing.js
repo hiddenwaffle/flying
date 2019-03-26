@@ -10,6 +10,14 @@ function getCartToRef(radius, theta, phi, ref) {
 	return ref.set(x, y, z);
 }
 
+// // Helper function from:
+// // http://www.html5gamedevs.com/topic/7599-convert-global-coordinates-to-local-coordinates/
+// function globalToLocal(vector, mesh) {
+//     var m = new BABYLON.Matrix();
+//     mesh.getWorldMatrix().invertToRef(m);
+//     return BABYLON.Vector3.TransformCoordinates(vector, m);
+// }
+
 var createScene = function () {
     console.clear()
 
@@ -32,20 +40,29 @@ var createScene = function () {
 
     // The box with the ray facing front
     var ship = BABYLON.MeshBuilder.CreateBox('ship', { }, scene);
-    ship.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
+    ship.scaling = new BABYLON.Vector3(0.1, 0.02, 0.1)
     ship.bakeCurrentTransformIntoVertices()
     var shipMaterial = new BABYLON.StandardMaterial('shipMaterial', scene)
-    shipMaterial.alpha = 0.8
+    shipMaterial.alpha = 0.95
     ship.material = shipMaterial
+    // "top"
+    var top = BABYLON.MeshBuilder.CreateBox('top', { }, scene)
+    top.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
+    top.position.y = 0.05 / 2
+    top.bakeCurrentTransformIntoVertices()
+    top.parent = ship
 
     // Point toward front of ship
-    var rayLength = 0.3
-    var localMeshOrigin = new BABYLON.Vector3(0, 0, -0.04)
-    var localMeshDirection = new BABYLON.Vector3(0, 0, 1)
+    // It goes -z because mesh.lookAt() points towards -z
     var ray = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
     var rayHelper = new BABYLON.RayHelper(ray);
     rayHelper.show(scene);
-    rayHelper.attachToMesh(ship, localMeshDirection, localMeshOrigin, rayLength)
+    rayHelper.attachToMesh(
+        ship,
+        new BABYLON.Vector3(0, 0, -1), // direction in local mesh
+        new BABYLON.Vector3(0, 0, -0.04), // origin in local mesh
+        0.3 // length
+    )
 
     // Destination
     var dest = BABYLON.MeshBuilder.CreateSphere('dest', { segments: 16 }, scene);
@@ -121,13 +138,23 @@ var createScene = function () {
         var diffRay = new BABYLON.Ray(ship.position, diffvec, 0.3)
         var diffRayHelper = new BABYLON.RayHelper(diffRay)
         diffRayHelper.show(scene, new BABYLON.Color3(1, 0, 1))
-    }, 0)
 
-    // TODO: The bottom of ship should face the origin
+        // Top of ship should face out from origin
+        ship.alignWithNormal(ship.position.normalizeToNew())
+
+        // Rotate front of ship so that it looks towards target (along geodesic)
+    }, 500)
+
     // TODO: Then have ship rotate around axis from origin to cube, "a" and "d"
     // TODO: "w" and "s" have the ship move in that direction, and then be brought down the plane
 
+    const scratchRef = new BABYLON.Vector3()
+    scratchRef.set(ship.position.x, ship.position.y, ship.position.z)
+    console.log('wtf', scratchRef.normalize())
     scene.beforeRender = () => {
+        // Test Delete Me:
+        ship.rotateAround(scratchRef, 0.01)
+
         // Run the "halfway" sphere along the geodesic
         angle += 0.01
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
@@ -135,7 +162,13 @@ var createScene = function () {
         // TODO: This ought to rotate in world space around the vector from origin to ship, but
         //       that depends on how the ship is being positioned at any given point. The bottom of
         //       the ship should face the origin before this line runs.
-        ship.rotation.y += 0.01
+
+        // Two ways to look at the "halfway" point
+        // BABYLON.Vector3.TransformCoordinatesToRef(halfway.position, halfway.parent.getWorldMatrix(), scratchRef)
+        // ship.lookAt(scratchRef)
+        // Alternative:
+        // http://www.html5gamedevs.com/topic/16380-get-position-of-mesh-after-rotation/
+        // ship.lookAt(halfway.getBoundingInfo().boundingBox.centerWorld)
     }
 
     return scene;
