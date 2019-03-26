@@ -42,6 +42,8 @@ var createScene = function () {
     var ship = BABYLON.MeshBuilder.CreateBox('ship', { }, scene);
     ship.scaling = new BABYLON.Vector3(0.1, 0.02, 0.1)
     ship.bakeCurrentTransformIntoVertices()
+    // Ensure that quaternions are used for rotations (going to use for rotations around y-axis)
+    ship.rotationQuaternion = new BABYLON.Quaternion()
     var shipMaterial = new BABYLON.StandardMaterial('shipMaterial', scene)
     shipMaterial.alpha = 0.95
     ship.material = shipMaterial
@@ -128,6 +130,11 @@ var createScene = function () {
     console.log('before   ', halfwayPosition1)
     angle += 0.05
     BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
+
+    let doRotation = false
+    let quaternionAfterAlignWithNormalCall = null
+    let myAxis = new BABYLON.Vector3(0, 1, 0)
+    let myAngle = 0
     setTimeout(() => {
         const halfwayPosition2 = BABYLON.Vector3.TransformCoordinates(halfway.position, halfway.parent.getWorldMatrix())
         console.log('after   ', halfwayPosition2)
@@ -143,32 +150,27 @@ var createScene = function () {
         ship.alignWithNormal(ship.position.normalizeToNew())
 
         // Rotate front of ship so that it looks towards target (along geodesic)
+        // Maybe use acos and dot to get angle between the vectors: http://www.html5gamedevs.com/topic/29839-rotation-between-two-unit-vectors/
+        setTimeout(() => {
+            doRotation = true
+            quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
+        }, 2000)
     }, 500)
 
     // TODO: Then have ship rotate around axis from origin to cube, "a" and "d"
     // TODO: "w" and "s" have the ship move in that direction, and then be brought down the plane
 
-    const scratchRef = new BABYLON.Vector3()
-    scratchRef.set(ship.position.x, ship.position.y, ship.position.z)
-    console.log('wtf', scratchRef.normalize())
+    const scratch = new BABYLON.Quaternion()
     scene.beforeRender = () => {
-        // Test Delete Me:
-        ship.rotateAround(scratchRef, 0.01)
+        if (doRotation) {
+            myAngle += 0.01
+            BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
+            scratch.multiplyToRef(quaternionAfterAlignWithNormalCall, ship.rotationQuaternion)
+        }
 
         // Run the "halfway" sphere along the geodesic
         angle += 0.01
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
-
-        // TODO: This ought to rotate in world space around the vector from origin to ship, but
-        //       that depends on how the ship is being positioned at any given point. The bottom of
-        //       the ship should face the origin before this line runs.
-
-        // Two ways to look at the "halfway" point
-        // BABYLON.Vector3.TransformCoordinatesToRef(halfway.position, halfway.parent.getWorldMatrix(), scratchRef)
-        // ship.lookAt(scratchRef)
-        // Alternative:
-        // http://www.html5gamedevs.com/topic/16380-get-position-of-mesh-after-rotation/
-        // ship.lookAt(halfway.getBoundingInfo().boundingBox.centerWorld)
     }
 
     return scene;
