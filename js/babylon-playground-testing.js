@@ -161,10 +161,8 @@ var createScene = function () {
 
         // Rotate front of ship so that it looks towards target (along geodesic)
         // Maybe use acos and dot to get angle between the vectors: http://www.html5gamedevs.com/topic/29839-rotation-between-two-unit-vectors/
-        setTimeout(() => {
-            applyRotation = true
-            quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
-        }, 2000)
+        applyRotation = true
+        quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
     }, 500)
 
     const scratch = new BABYLON.Quaternion()
@@ -193,6 +191,10 @@ var createScene = function () {
             if (diffvec) {
                 console.log('diffvec ', diffvec)
             }
+        }
+        if (map['w']) {
+            // TODO: Maybe calculate the halfway, then move the position of the ship onto
+            //       the position of the halfway
         }
     }
 
