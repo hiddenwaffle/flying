@@ -159,8 +159,7 @@ var createScene = function () {
         // Top of ship should face out from origin
         ship.alignWithNormal(ship.position.normalizeToNew())
 
-        // Rotate front of ship so that it looks towards target (along geodesic)
-        // Maybe use acos and dot to get angle between the vectors: http://www.html5gamedevs.com/topic/29839-rotation-between-two-unit-vectors/
+        // Allow further rotations to be used on the ship's current quaternion
         applyRotation = true
         quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
     }, 0)
@@ -169,6 +168,8 @@ var createScene = function () {
     const myAxis = new BABYLON.Vector3()
     scene.beforeRender = () => {
         if (applyRotation) {
+            // Multiple rotation around origin to ship ("turning") and the one that
+            // "straightened" the ship top to be out from origin (alignWithNormal call)
             ship.position.normalizeToRef(myAxis)
             BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
             scratch.multiplyToRef(quaternionAfterAlignWithNormalCall, ship.rotationQuaternion)
@@ -193,8 +194,8 @@ var createScene = function () {
             }
         }
         if (map['w']) {
-            // TODO: Maybe calculate the halfway, then move the position of the ship onto
-            //       the position of the halfway
+            // TODO: Maybe calculate moving in the current direction one frame and
+            //       then "drop" the ship towards the origin so it is the expected distance away
         }
     }
 
