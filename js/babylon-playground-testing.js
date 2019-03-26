@@ -22,6 +22,17 @@ var createScene = function () {
     console.clear()
 
     var scene = new BABYLON.Scene(engine);
+
+    // Keyboard input
+    const map = { } //object for multiple key presses
+    scene.actionManager = new BABYLON.ActionManager(scene);
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+      map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
+    }))
+    scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+      map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
+    }))
+
     var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 2, -3), scene);
     camera.speed = 0.25
     camera.setTarget(BABYLON.Vector3.Zero());
@@ -131,7 +142,7 @@ var createScene = function () {
     angle += 0.05
     BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
 
-    let doRotation = false
+    let applyRotation = false
     let quaternionAfterAlignWithNormalCall = null
     let myAngle = 0
     setTimeout(() => {
@@ -151,20 +162,16 @@ var createScene = function () {
         // Rotate front of ship so that it looks towards target (along geodesic)
         // Maybe use acos and dot to get angle between the vectors: http://www.html5gamedevs.com/topic/29839-rotation-between-two-unit-vectors/
         setTimeout(() => {
-            doRotation = true
+            applyRotation = true
             quaternionAfterAlignWithNormalCall = ship.rotationQuaternion.clone()
         }, 2000)
     }, 500)
 
-    // TODO: Then have ship rotate around axis from origin to cube, "a" and "d"
-    // TODO: "w" and "s" have the ship move in that direction, and then be brought down the plane
-
     const scratch = new BABYLON.Quaternion()
     const myAxis = new BABYLON.Vector3()
     scene.beforeRender = () => {
-        if (doRotation) {
+        if (applyRotation) {
             ship.position.normalizeToRef(myAxis)
-            myAngle += 0.01
             BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
             scratch.multiplyToRef(quaternionAfterAlignWithNormalCall, ship.rotationQuaternion)
         }
@@ -172,6 +179,13 @@ var createScene = function () {
         // Run the "halfway" sphere along the geodesic
         angle += 0.01
         BABYLON.Quaternion.RotationAxisToRef(axis, angle, origin.rotationQuaternion)
+
+        if (map['a']) {
+            myAngle -= 0.01
+        }
+        if (map['d']) {
+            myAngle += 0.01
+        }
     }
 
     return scene;
