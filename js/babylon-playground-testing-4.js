@@ -105,12 +105,13 @@ var createScene = function () {
 
     scene.beforeRender = () => {
         // TESTING HERE ---------
-        if (map['q']) { phi -= 0.01   ; debug()}
-        if (map['Q']) { phi += 0.01   ; debug()}
-        if (map['e']) { theta -= 0.01 ; debug()}
-        if (map['E']) { theta += 0.01 ; debug()}
+        if (map['a']) { phi -= 0.01   ; debug()}
+        if (map['d']) { phi += 0.01   ; debug()}
+        if (map['w']) { theta -= 0.01 ; debug()}
+        if (map['s']) { theta += 0.01 ; debug()}
         asCartesianToRef(rho, theta, phi, ship.position)
         // NOTES:
+        // ***Kinda like the sphere is rotated left 90 degrees
         //  North Pole                = ( <anything>       ,       0       )
         //  South Pole                = ( <anything>       , Math.PI       )
         //  (Prime Meridian, Equator) = (    Math.PI * 1/2 , Math.PI * 1/2 ) <-- away from camera
@@ -132,31 +133,31 @@ var createScene = function () {
         scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
 
 
+        // Have q, e, and space be the rotational controls for now
 
-        if (map['w']) {
-            // Calculate moving in the current direction one frame (TODO: Use time)
-            ship.translate(BABYLON.Axis.Z, 0.05, BABYLON.Space.LOCAL);
-            // TODO: Instead of directly doing above, move the guide along the geodesic
-            //       Then translate the ship to the guide
-            //       Do not recompute the geodesic unless turning with A or D keys
+        // if (map[' ']) {
+        //     // Calculate moving in the current direction one frame (TODO: Use time)
+        //     ship.translate(BABYLON.Axis.Z, 0.05, BABYLON.Space.LOCAL);
+        //     // TODO: Instead of directly doing above, move the guide along the geodesic
+        //     //       Then translate the ship to the guide
+        //     //       Do not recompute the geodesic unless turning with A or D keys
 
-            // "drop" the ship towards the origin so it is the expected distance away.
-            // Good thing 1 is the distance used here, can just normalize...
-            ship.position.normalize()
-            // TODO: Possibility of rotating WITHOUT parenting by computing sin/cos of theta/phi changes
-            // TODO: Quaternion slerping?
-            // TODO: Maybe it is possible to get the axis of rotation, keep it constant, and
-            //       update it only when turning? Angle mvmt/frame is fixed rather than accumulating
-        }
-
-        if (map['a']) {
-            myAngle -= 0.05
-            console.log('ship facing: ', myAngle)
-        }
-        if (map['d']) {
-            myAngle += 0.05
-            console.log('ship facing: ', myAngle)
-        }
+        //     // "drop" the ship towards the origin so it is the expected distance away.
+        //     // Good thing 1 is the distance used here, can just normalize...
+        //     ship.position.normalize()
+        //     // TODO: Possibility of rotating WITHOUT parenting by computing sin/cos of theta/phi changes
+        //     // TODO: Quaternion slerping?
+        //     // TODO: Maybe it is possible to get the axis of rotation, keep it constant, and
+        //     //       update it only when turning? Angle mvmt/frame is fixed rather than accumulating
+        // }
+        // if (map['q']) {
+        //     myAngle -= 0.05
+        //     console.log('ship facing: ', myAngle)
+        // }
+        // if (map['e']) {
+        //     myAngle += 0.05
+        //     console.log('ship facing: ', myAngle)
+        // }
     }
 
     return scene;
