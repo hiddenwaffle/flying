@@ -2,14 +2,19 @@
 
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
-// TODO: Is this left-handed or right-handed? Because z = r * sin instead of r * cos...
-function getCartToRef(radius, theta, phi, ref) {
-	var lat = theta;
-	var lon = phi;
-	var x = radius * Math.cos(lat) * Math.cos(lon);
-	var y = radius * Math.cos(lat) * Math.sin(lon);
-	var z = radius * Math.sin(lat);
-	return ref.set(x, y, z);
+function asCartesianToRef(rho, phi, theta, ref) {
+    // This is how it looks when +X is right, +Y is up, and +Z is forward:
+    const x = rho * Math.cos(theta) * Math.sin(phi)
+    const y = rho * Math.cos(phi)
+    const z = rho * Math.sin(theta) * Math.sin(phi)
+
+    ref.set(x, y, z)
+}
+
+// Helper function from:
+// http://www.geom.uiuc.edu/docs/reference/CRC-formulas/node42.html
+function asSphericalToRef(x, y, z, ref) {
+    // TODO: Prevent division by zero
 }
 
 // // Helper function from:
@@ -35,7 +40,7 @@ var createScene = function () {
       map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
     }))
 
-    var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 2, -3), scene);
+    var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 0, -3), scene);
     camera.speed = 0.25
     camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
@@ -79,10 +84,10 @@ var createScene = function () {
     )
 
     // Starting position
-    var radius = 1
-    var theta = Math.random() * 2 * Math.PI
-    var phi = Math.acos(Math.random() * 2 - 1)
-    getCartToRef(radius, theta, phi, ship.position)
+    var rho = 1
+    var phi   = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
+    var theta =     Math.random() * Math.PI // 0 <= theta <=  PI
+    asCartesianToRef(rho, phi, theta, ship.position)
 
     let applyRotation = false
     let myAngle = 0
@@ -92,7 +97,28 @@ var createScene = function () {
     const scratch2 = new BABYLON.Quaternion()
     const scratchVector = new BABYLON.Vector3()
     const myAxis = new BABYLON.Vector3()
+
+    function debug() {
+        asCartesianToRef(rho, theta, phi, scratchVector)
+        console.log('(', phi, ',', theta, ') vs:', scratchVector)
+    }
+
     scene.beforeRender = () => {
+        // TESTING HERE ---------
+        if (map['q']) { phi -= 0.01   ; debug()}
+        if (map['Q']) { phi += 0.01   ; debug()}
+        if (map['e']) { theta -= 0.01 ; debug()}
+        if (map['E']) { theta += 0.01 ; debug()}
+        asCartesianToRef(rho, theta, phi, ship.position)
+        // NOTES:
+        //  North Pole                = ( <anything>       ,       0       )
+        //  South Pole                = ( <anything>       , Math.PI       )
+        //  (Prime Meridian, Equator) = (    Math.PI * 1/2 , Math.PI * 1/2 ) <-- away from camera
+        //  (   "Left Side", Equator) = (    Math.PI       , Math.PI * 1/2 )
+        //  (Prime Meridian, Equator) = (    Math.PI * 3/2 , Math.PI * 1/2 ) <-- facing camera
+        //  (  "Right Side", Equator) = (    Math.PI * 2   , Math.PI * 1/2 )
+        // TESTING HERE ---------
+
         // Multiply rotation around origin to ship ("turning") and the one that
         // "straightened" the ship top to be out from origin (alignWithNormal call)
 
@@ -110,18 +136,26 @@ var createScene = function () {
         if (map['w']) {
             // Calculate moving in the current direction one frame (TODO: Use time)
             ship.translate(BABYLON.Axis.Z, 0.05, BABYLON.Space.LOCAL);
-            // TODO: Instead of directly doing above, go along the geodesic somehow
+            // TODO: Instead of directly doing above, move the guide along the geodesic
+            //       Then translate the ship to the guide
+            //       Do not recompute the geodesic unless turning with A or D keys
 
             // "drop" the ship towards the origin so it is the expected distance away.
             // Good thing 1 is the distance used here, can just normalize...
             ship.position.normalize()
+            // TODO: Possibility of rotating WITHOUT parenting by computing sin/cos of theta/phi changes
+            // TODO: Quaternion slerping?
+            // TODO: Maybe it is possible to get the axis of rotation, keep it constant, and
+            //       update it only when turning? Angle mvmt/frame is fixed rather than accumulating
         }
 
         if (map['a']) {
             myAngle -= 0.05
+            console.log('ship facing: ', myAngle)
         }
         if (map['d']) {
             myAngle += 0.05
+            console.log('ship facing: ', myAngle)
         }
     }
 
