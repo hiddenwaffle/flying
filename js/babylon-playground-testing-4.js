@@ -94,11 +94,10 @@ var createScene = function () {
     var rho = 1
     var phi   = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
     var theta =     Math.random() * Math.PI // 0 <= theta <=  PI
-    asCartesianToRef(rho, phi, theta, ship.position)
-
-    let applyRotation = false
     let myAngle = 0
-    let diffvec = null
+    var dphi   = -Math.cos(myAngle) // Should match code in loop
+    var dtheta = -Math.sin(myAngle) // Should match code in loop
+    asCartesianToRef(rho, phi, theta, ship.position)
 
     const scratch = new BABYLON.Quaternion()
     const scratch2 = new BABYLON.Quaternion()
@@ -111,15 +110,12 @@ var createScene = function () {
     }
 
     scene.beforeRender = () => {
-        // TESTING HERE ---------
+        // TODO: mod phi past 2pi or theta past pi, and under 0 for both
         if (map['a']) { phi -= 0.03   ; debug()}
         if (map['d']) { phi += 0.03   ; debug()}
         if (map['w']) { theta -= 0.03 ; debug()}
         if (map['s']) { theta += 0.03 ; debug()}
         asCartesianToRef(rho, theta, phi, ship.position)
-
-        // Multiply rotation around origin to ship ("turning") and the one that
-        // "straightened" the ship top to be out from origin (alignWithNormal call)
 
         // Re-straighten the ship
         ship.position.normalizeToRef(myAxis) // TODO: Does copy matter? And does normalization matter?
@@ -132,6 +128,28 @@ var createScene = function () {
 
 
         // Have q, e, and space be the rotational controls for now
+        if (map['q'] || map['e']) {
+            if (map['q']) {
+                myAngle -= 0.05 // TODO: mod under 0
+            }
+            if (map['e']) {
+                myAngle += 0.05 // TODO: mod past 2pi
+            }
+            // Caution: These are flipped to match what should happen if you add the value
+            //          to the spherical coordinate if you move forward on that vector.
+            //          (i.e., looking  "left" => cosine => -1 from phi
+            //                 looking "right" => cosine => +1   to phi
+            //                 looking    "up" =>   sine => -1 from theta
+            //                 looking  "down" =>   sine => +1   to theta
+            dphi   = -Math.cos(myAngle)
+            dtheta = -Math.sin(myAngle)
+            console.log('-->', dphi, dtheta, myAngle)
+        }
+        if (map[' ']) {
+            phi +=   dphi   * 0.05
+            theta += dtheta * 0.05
+            asCartesianToRef(rho, theta, phi, ship.position)
+        }
 
         // if (map[' ']) {
         //     // Calculate moving in the current direction one frame (TODO: Use time)
@@ -147,14 +165,6 @@ var createScene = function () {
         //     // TODO: Quaternion slerping?
         //     // TODO: Maybe it is possible to get the axis of rotation, keep it constant, and
         //     //       update it only when turning? Angle mvmt/frame is fixed rather than accumulating
-        // }
-        // if (map['q']) {
-        //     myAngle -= 0.05
-        //     console.log('ship facing: ', myAngle)
-        // }
-        // if (map['e']) {
-        //     myAngle += 0.05
-        //     console.log('ship facing: ', myAngle)
         // }
     }
 
