@@ -1,4 +1,7 @@
 // This is a continuation of testing #2
+// Well documented but doesn't quite work right because the poles
+// warp the path, the great circle isn't followed, and the direction flips
+// after crossing certain thresholds
 
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
@@ -9,12 +12,6 @@ function asCartesianToRef(rho, phi, theta, ref) {
     const z = rho * Math.sin(theta) * Math.sin(phi)
 
     ref.set(x, y, z)
-}
-
-// Helper function from:
-// http://www.geom.uiuc.edu/docs/reference/CRC-formulas/node42.html
-function asSphericalToRef(x, y, z, ref) {
-    // TODO: Prevent division by zero
 }
 
 // // Helper function from:
@@ -143,12 +140,17 @@ var createScene = function () {
             //                 looking  "down" =>   sine => +1   to theta
             dphi   = -Math.cos(myAngle)
             dtheta = -Math.sin(myAngle)
-            console.log('-->', dphi, dtheta, myAngle)
+            // console.log('-->', dphi, dtheta, myAngle)
+
+            // TODO: Reconstruct the great circle
         }
         if (map[' ']) {
-            phi +=   dphi   * 0.05
-            theta += dtheta * 0.05
-            asCartesianToRef(rho, theta, phi, ship.position)
+            // Instead of doing the next three lines, must follow the great circle
+            // phi +=   dphi   * 0.05
+            // theta += dtheta * 0.05
+            // asCartesianToRef(rho, theta, phi, ship.position)
+
+            // TODO: Follow the great circle
         }
 
         // if (map[' ']) {
