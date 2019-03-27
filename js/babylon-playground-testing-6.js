@@ -1,7 +1,8 @@
-// This is a continuation of testing #2
+// This is another continuation of testing #2
 // Well documented but doesn't quite work right because the poles
 // warp the path, the great circle isn't followed, and the direction flips
 // after crossing certain thresholds
+// Not sure where I am going with this
 
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
@@ -37,6 +38,7 @@ var createScene = function () {
     map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
   }))
 
+  // TEMPORARY: LOOK AT SPHERE FROM POSITIVE Y-AXIS TO FIGURE OUT FACE FLIPPING PROBLEM
   // Look at sphere from the negative x-axis so that spherical coordinates are more intuitive:
   //  North Pole                = ( <anything>       ,       0       )
   //  South Pole                = ( <anything>       , Math.PI       )
@@ -44,7 +46,7 @@ var createScene = function () {
   //  (   "Left Side", Equator) = (       PI / 2 , Math.PI * 1/2 )
   //  (Prime Meridian, Equator) = (       PI     , Math.PI * 1/2 ) <-- facing camera
   //  (  "Right Side", Equator) = (      3PI / 2 , Math.PI * 1/2 )
-  var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(-3, 0, 0), scene);
+  var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 3, 0), scene);
   camera.speed = 0.25
   camera.setTarget(BABYLON.Vector3.Zero());
   camera.attachControl(canvas, true);
@@ -87,10 +89,11 @@ var createScene = function () {
       0.3 // length
   )
 
+  // TEMPORARY: START NEAR NORTH POLE TO FIGURE OUT FACE FLIPPING PROBLEM
   // Starting position
   var rho = 1
-  var phi   = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
-  var theta =     Math.random() * Math.PI // 0 <= theta <=  PI
+  var phi   = Math.PI // 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
+  var theta = 0.3     //     Math.random() * Math.PI // 0 <= theta <=  PI
   let myAngle = 0
   var dphi   = -Math.cos(myAngle) // Should match code in loop
   var dtheta = -Math.sin(myAngle) // Should match code in loop
@@ -103,7 +106,8 @@ var createScene = function () {
 
   function debug() {
       asCartesianToRef(rho, theta, phi, scratchVector)
-      console.log('(', phi, ',', theta, ') vs:', scratchVector)
+      // console.log('(', phi, ',', theta, ') vs:', scratchVector)
+      console.log('(', phi, ',', theta, ') - (' + dphi + ', ' + dtheta + ')')
   }
 
   scene.beforeRender = () => {
@@ -113,6 +117,19 @@ var createScene = function () {
       if (map['w']) { theta -= 0.03 ; debug()}
       if (map['s']) { theta += 0.03 ; debug()}
       asCartesianToRef(rho, theta, phi, ship.position)
+
+      // Fix horizontal wrap-around first
+      if (phi <= 0) {
+          phi += Math.PI * 2
+      } else if (phi > Math.PI * 2) {
+          phi -= Math.PI * 2
+      }
+      // TODO: Fix vertical wrap-around... (tricky) why does it flip
+      if (theta <= 0) {
+          // TODO
+      } else if (theta > Math.PI) {
+          // TODO
+      }
 
       // Re-straighten the ship
       ship.position.normalizeToRef(myAxis) // TODO: Does copy matter? And does normalization matter?
@@ -151,7 +168,6 @@ var createScene = function () {
           asCartesianToRef(rho, theta, phi, ship.position)
 
           // TODO: Somehow this needs to correct towards the great circle if it is getting off track
-          // TODO: Somehow this also needs to handle direction correctly when wrapping around
 
           debug()
       }
