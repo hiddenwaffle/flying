@@ -180,10 +180,7 @@ var createScene = function () {
 
   let doAfterRender = false
   scene.beforeRender = () => {
-      BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, origin.rotationQuaternion) // "movement" rotation
-      // BABYLON.Quaternion.RotationAxisToRef(fAxis, fAngle, q2cache) // "facing" rotation
-      // q1cache.multiplyToRef(q2cache, origin.rotationQuaternion)
-
+      // Compute movement rotation
       if (map['w']) {
           oAngle += 0.02
       }
@@ -194,27 +191,23 @@ var createScene = function () {
           let rotation
           if (map['a']) {
               fAngle -= 0.02
-              rotation = -0.01
+              rotation = -0.02
           }
           if (map['d']) {
               fAngle += 0.02
-              rotation = 0.01
+              rotation = 0.02
           }
 
-          console.log('--> before', oAxis)
-          // Get the world vector between origin and ship (which is the ship's world position)...
-          // BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), v1cache)
-          // ...rotate the oAxis around this vector...
-
-          // ...create a quaternion to rotate <rotation> degrees around the vector...
-          BABYLON.Quaternion.RotationAxisToRef(BABYLON.Axis.Y, rotation, q1cache)
-
-          // ...do the rotation...
+          // Get ship location in world space
+          BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), v1cache)
+          // Create a quaternion to rotate <rotation> degrees around the vector, then do the rotation
+          console.log('v1cache', v1cache, 'oAxis', oAxis)
+          BABYLON.Quaternion.RotationAxisToRef(v1cache, rotation, q1cache)
           rotateVectorToRef(oAxis, q1cache, oAxis)
           oAxis.normalize()
-          console.log('--> after', oAxis)
-          // oAngle = 0 // TODO: reset the rotation? But must have it start at the ship's new position first
       }
+      // Apply the rotation of oAxis and oAngle to do forward "movement'"
+      BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, origin.rotationQuaternion)
 
       // Visualize the oAxis
       // TODO: Why is rotation of oAxis, at north pole for example, moving faster than box?
