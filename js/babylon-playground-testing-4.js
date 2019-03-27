@@ -146,11 +146,14 @@ var createScene = function () {
         }
         if (map[' ']) {
             // Instead of doing the next three lines, must follow the great circle
-            // phi +=   dphi   * 0.05
-            // theta += dtheta * 0.05
-            // asCartesianToRef(rho, theta, phi, ship.position)
+            phi +=   dphi   * 0.05
+            theta += dtheta * 0.05
+            asCartesianToRef(rho, theta, phi, ship.position)
 
-            // TODO: Follow the great circle
+            // TODO: Somehow this needs to correct towards the great circle if it is getting off track
+            // TODO: Somehow this also needs to handle direction correctly when wrapping around
+
+            debug()
         }
 
         // if (map[' ']) {

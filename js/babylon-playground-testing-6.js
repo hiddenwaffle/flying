@@ -1,4 +1,7 @@
-// Use great circle
+// This is a continuation of testing #2
+// Well documented but doesn't quite work right because the poles
+// warp the path, the great circle isn't followed, and the direction flips
+// after crossing certain thresholds
 
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
@@ -7,8 +10,17 @@ function asCartesianToRef(rho, phi, theta, ref) {
   const x = rho * Math.cos(theta) * Math.sin(phi)
   const y = rho * Math.cos(phi)
   const z = rho * Math.sin(theta) * Math.sin(phi)
+
   ref.set(x, y, z)
 }
+
+// // Helper function from:
+// // http://www.html5gamedevs.com/topic/7599-convert-global-coordinates-to-local-coordinates/
+// function globalToLocal(vector, mesh) {
+//     var m = new BABYLON.Matrix();
+//     mesh.getWorldMatrix().invertToRef(m);
+//     return BABYLON.Vector3.TransformCoordinates(vector, m);
+// }
 
 var createScene = function () {
   console.clear()
@@ -39,7 +51,7 @@ var createScene = function () {
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
   light.intensity = 0.7;
 
-  // The world sphere
+  // Params: name, subdivs, size, scene
   var sphere = BABYLON.MeshBuilder.CreateSphere('sphere1', { segments: 16 }, scene);
   sphere.scaling = new BABYLON.Vector3(2, 2, 2)
   sphere.bakeCurrentTransformIntoVertices()
@@ -76,100 +88,89 @@ var createScene = function () {
   )
 
   // Starting position
-  asCartesianToRef(
-      1,                           // rho
-      2 * Math.random() * Math.PI, // phi
-      Math.random() * Math.PI,     // theta
-      ship.position
-  )
-
-  // Origin sphere at 0, 0, 0
-  var origin = BABYLON.MeshBuilder.CreateSphere('halfway', { segments: 16 }, scene);
-  origin.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
-  origin.bakeCurrentTransformIntoVertices()
-  origin.rotationQuaternion = new BABYLON.Quaternion()
-
-  // "guide" sphere
-  var guide = BABYLON.MeshBuilder.CreateSphere('halfway', { segments: 16 }, scene);
-  guide.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
-  guide.bakeCurrentTransformIntoVertices()
-  guide.parent = origin
-  var guideMaterial = new BABYLON.StandardMaterial('guideMaterial', scene)
-  guideMaterial.diffuseColor = new BABYLON.Color3(0.75, 0.25, 0.5)
-  guideMaterial.alpha = 0.8
-  guide.material = guideMaterial
-
-  // Set origin rotation direction to go towards dest
-  const axisM = new BABYLON.Vector3()
-  let angleM = 0
-
-  // Ranndom junk TODO: sort this out in the real implementation
+  var rho = 1
+  var phi   = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
+  var theta =     Math.random() * Math.PI // 0 <= theta <=  PI
   let myAngle = 0
-  const myAxis = new BABYLON.Vector3()
+  var dphi   = -Math.cos(myAngle) // Should match code in loop
+  var dtheta = -Math.sin(myAngle) // Should match code in loop
+  asCartesianToRef(rho, phi, theta, ship.position)
+
   const scratch = new BABYLON.Quaternion()
   const scratch2 = new BABYLON.Quaternion()
   const scratchVector = new BABYLON.Vector3()
-  let moveForward = false
+  const myAxis = new BABYLON.Vector3()
 
-  const straightenShip = () => {
-      // Combine straightening the ship AND the ship's rotation => ship's rotation quaternion.
-      // This is not movement rotation. This is local to the ship.
-      // TODO: Can move this into space bar only?
+  function debug() {
+      asCartesianToRef(rho, theta, phi, scratchVector)
+      console.log('(', phi, ',', theta, ') vs:', scratchVector)
+  }
+
+  scene.beforeRender = () => {
+      // TODO: mod phi past 2pi or theta past pi, and under 0 for both
+      if (map['a']) { phi -= 0.03   ; debug()}
+      if (map['d']) { phi += 0.03   ; debug()}
+      if (map['w']) { theta -= 0.03 ; debug()}
+      if (map['s']) { theta += 0.03 ; debug()}
+      asCartesianToRef(rho, theta, phi, ship.position)
+
+      // Re-straighten the ship
       ship.position.normalizeToRef(myAxis) // TODO: Does copy matter? And does normalization matter?
       ship.alignWithNormal(myAxis)
       scratch2.copyFrom(ship.rotationQuaternion)
+
+      // Combine the quaternions into the ship's quaternion
       BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
       scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
-  }
-  straightenShip()
 
-  const recomputeGreatCircle = () => {
-      // Set guide sphere directly in front of ship
-      ship.getDirectionToRef(BABYLON.Axis.Z, scratchVector)
-      scratchVector.scaleInPlace(0.01)
-      ship.position.addToRef(scratchVector, guide.position)
 
-      // Determine the axis for movement rotation
-      BABYLON.Vector3.CrossToRef(ship.position, guide.position, axisM)
-      axisM.normalize()
-      angleM = 0
-  }
-  setTimeout(() => {
-      recomputeGreatCircle()
-  }, 0) // TODO: (Make better) Cannot compute the great circle until at least one frame has been rendered
-
-  scene.beforeRender = () => {
       // Have q, e, and space be the rotational controls for now
-      if (map['q']) {
-          myAngle -= 0.05
-          recomputeGreatCircle()
-      }
-      if (map['e']) {
-          myAngle += 0.05
-          recomputeGreatCircle()
+      if (map['q'] || map['e']) {
+          if (map['q']) {
+              myAngle -= 0.05 // TODO: mod under 0
+          }
+          if (map['e']) {
+              myAngle += 0.05 // TODO: mod past 2pi
+          }
+          // Caution: These are flipped to match what should happen if you add the value
+          //          to the spherical coordinate if you move forward on that vector.
+          //          (i.e., looking  "left" => cosine => -1 from phi
+          //                 looking "right" => cosine => +1   to phi
+          //                 looking    "up" =>   sine => -1 from theta
+          //                 looking  "down" =>   sine => +1   to theta
+          dphi   = -Math.cos(myAngle)
+          dtheta = -Math.sin(myAngle)
+          // console.log('-->', dphi, dtheta, myAngle)
+
+          // TODO: Reconstruct the great circle
       }
       if (map[' ']) {
-          moveForward = true
-          ship.parent = origin
-          // Move the guide along the great circle
-          angleM += 0.01
-          BABYLON.Quaternion.RotationAxisToRef(axisM, angleM, origin.rotationQuaternion)
+          // Instead of doing the next three lines, must follow the great circle
+          phi +=   dphi   * 0.05
+          theta += dtheta * 0.05
+          asCartesianToRef(rho, theta, phi, ship.position)
 
-          // Follow the guide
-          BABYLON.Vector3.TransformCoordinatesToRef(guide.position, guide.parent.getWorldMatrix(), scratchVector)
-          // ship.lookAt(scratchVector)
-          // ship.translate(BABYLON.Axis.X, 0.01)
+          // TODO: Somehow this needs to correct towards the great circle if it is getting off track
+          // TODO: Somehow this also needs to handle direction correctly when wrapping around
+
+          debug()
       }
-      straightenShip()
-  }
-  scene.afterRender = () => {
-      if (moveForward) {
-          BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), scratchVector)
-          ship.parent = null
-          ship.position.copyFrom(scratchVector)
-          angleM = 0
-          moveForward = false
-      }
+
+      // if (map[' ']) {
+      //     // Calculate moving in the current direction one frame (TODO: Use time)
+      //     ship.translate(BABYLON.Axis.Z, 0.05, BABYLON.Space.LOCAL);
+      //     // TODO: Instead of directly doing above, move the guide along the geodesic
+      //     //       Then translate the ship to the guide
+      //     //       Do not recompute the geodesic unless turning with A or D keys
+
+      //     // "drop" the ship towards the origin so it is the expected distance away.
+      //     // Good thing 1 is the distance used here, can just normalize...
+      //     ship.position.normalize()
+      //     // TODO: Possibility of rotating WITHOUT parenting by computing sin/cos of theta/phi changes
+      //     // TODO: Quaternion slerping?
+      //     // TODO: Maybe it is possible to get the axis of rotation, keep it constant, and
+      //     //       update it only when turning? Angle mvmt/frame is fixed rather than accumulating
+      // }
   }
 
   return scene;
