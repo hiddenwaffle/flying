@@ -40,7 +40,14 @@ var createScene = function () {
       map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
     }))
 
-    var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(0, 0, -3), scene);
+    // Look at sphere from the negative x-axis so that spherical coordinates are more intuitive:
+    //  North Pole                = ( <anything>       ,       0       )
+    //  South Pole                = ( <anything>       , Math.PI       )
+    //  (Prime Meridian, Equator) = ( 0 or 2PI     , Math.PI * 1/2 ) <-- away from camera
+    //  (   "Left Side", Equator) = (       PI / 2 , Math.PI * 1/2 )
+    //  (Prime Meridian, Equator) = (       PI     , Math.PI * 1/2 ) <-- facing camera
+    //  (  "Right Side", Equator) = (      3PI / 2 , Math.PI * 1/2 )
+    var camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(-3, 0, 0), scene);
     camera.speed = 0.25
     camera.setTarget(BABYLON.Vector3.Zero());
     camera.attachControl(canvas, true);
@@ -105,20 +112,11 @@ var createScene = function () {
 
     scene.beforeRender = () => {
         // TESTING HERE ---------
-        if (map['a']) { phi -= 0.01   ; debug()}
-        if (map['d']) { phi += 0.01   ; debug()}
-        if (map['w']) { theta -= 0.01 ; debug()}
-        if (map['s']) { theta += 0.01 ; debug()}
+        if (map['a']) { phi -= 0.03   ; debug()}
+        if (map['d']) { phi += 0.03   ; debug()}
+        if (map['w']) { theta -= 0.03 ; debug()}
+        if (map['s']) { theta += 0.03 ; debug()}
         asCartesianToRef(rho, theta, phi, ship.position)
-        // NOTES:
-        // ***Kinda like the sphere is rotated left 90 degrees
-        //  North Pole                = ( <anything>       ,       0       )
-        //  South Pole                = ( <anything>       , Math.PI       )
-        //  (Prime Meridian, Equator) = (    Math.PI * 1/2 , Math.PI * 1/2 ) <-- away from camera
-        //  (   "Left Side", Equator) = (    Math.PI       , Math.PI * 1/2 )
-        //  (Prime Meridian, Equator) = (    Math.PI * 3/2 , Math.PI * 1/2 ) <-- facing camera
-        //  (  "Right Side", Equator) = (    Math.PI * 2   , Math.PI * 1/2 )
-        // TESTING HERE ---------
 
         // Multiply rotation around origin to ship ("turning") and the one that
         // "straightened" the ship top to be out from origin (alignWithNormal call)
