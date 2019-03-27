@@ -169,8 +169,8 @@ var createScene = function () {
   oAxisRayNHelper.show(scene, new BABYLON.Color3(1, 0.5, 0)) // orange
 
   // // "facing" rotation for origin box (axis is origin to ship)
-  // var fAxis = new BABYLON.Vector3(0, 1, 0)
-  // var fAngle = 0
+  var fAxis = new BABYLON.Vector3(0, 1, 0)
+  var fAngle = 0
 
   // Cache variables for beforeRender callback, use with caution
   const q1cache = new BABYLON.Quaternion()
@@ -180,9 +180,9 @@ var createScene = function () {
 
   let doAfterRender = false
   scene.beforeRender = () => {
-      BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, q1cache) // "movement" rotation
+      BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, origin.rotationQuaternion) // "movement" rotation
       // BABYLON.Quaternion.RotationAxisToRef(fAxis, fAngle, q2cache) // "facing" rotation
-      q1cache.multiplyToRef(q2cache, origin.rotationQuaternion)
+      // q1cache.multiplyToRef(q2cache, origin.rotationQuaternion)
 
       if (map['w']) {
           oAngle += 0.02
@@ -203,17 +203,17 @@ var createScene = function () {
 
           console.log('--> before', oAxis)
           // Get the world vector between origin and ship (which is the ship's world position)...
-          BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), v1cache)
+          // BABYLON.Vector3.TransformCoordinatesToRef(ship.position, ship.parent.getWorldMatrix(), v1cache)
           // ...rotate the oAxis around this vector...
 
           // ...create a quaternion to rotate <rotation> degrees around the vector...
-          BABYLON.Quaternion.RotationAxisToRef(v1cache, rotation, q1cache)
+          BABYLON.Quaternion.RotationAxisToRef(BABYLON.Axis.Y, rotation, q1cache)
 
           // ...do the rotation...
           rotateVectorToRef(oAxis, q1cache, oAxis)
           oAxis.normalize()
           console.log('--> after', oAxis)
-          // oAngle = 0 // reset the rotation?
+          // oAngle = 0 // TODO: reset the rotation? But must have it start at the ship's new position first
       }
 
       // Visualize the oAxis
