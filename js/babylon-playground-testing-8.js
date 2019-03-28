@@ -214,7 +214,7 @@ var createScene = function () {
           dtheta = -Math.sin(myAngle)
 
           // Point origin +y at ship
-          ship.getDirectionToRef(BABYLON.Axis.Z, v1cache)
+          ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
           v2cache.copyFrom(ship.position)
           BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
           BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
