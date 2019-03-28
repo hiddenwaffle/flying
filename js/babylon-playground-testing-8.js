@@ -201,8 +201,11 @@ var createScene = function () {
             // Move ship to arrow
             BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
             ship.position.copyFrom(v1cache)
-            // TODO: Should this align the ship with the arrow right now so that hemisphere
-            //       changes don't cause direction flip?
+
+            // Align the ship with the arrow so that hemisphere changes do not cause direction flip
+            arrow.getDirectionToRef(BABYLON.Axis.Z, v1cache)
+            ship.getDirectionToRef(BABYLON.Axis.Z, v2cache)
+            ship.setDirection(v1cache)
         }
         if (map['w']) {
             // Follow the great circle by incrementing the origin's rotation angle
