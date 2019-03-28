@@ -131,8 +131,8 @@ var createScene = function () {
     var phi = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
     var theta = Math.random() * Math.PI // 0 <= theta <=  PI
     let myAngle = 0
-    var dphi = -Math.cos(myAngle) // Should match code in loop
-    var dtheta = -Math.sin(myAngle) // Should match code in loop
+    // var dphi = -Math.cos(myAngle) // Should match code in loop
+    // var dtheta = -Math.sin(myAngle) // Should match code in loop
     asCartesianToRef(rho, phi, theta, ship.position)
 
     // Origin box at 0, 0, 0
@@ -181,42 +181,19 @@ var createScene = function () {
     const m1cache = new BABYLON.Matrix()
     const zaxis = new BABYLON.Vector3(0, 0, 1)
 
-    function debug() {
-        asCartesianToRef(rho, theta, phi, scratchVector)
-        console.log('(', phi, ',', theta, ') vs:', scratchVector)
-    }
+    const turnSpeed = 0.01
+    const moveSpeed = 0.03
 
     scene.beforeRender = () => {
-        // TODO: mod phi past 2pi or theta past pi, and under 0 for both
-        if (map['a']) { phi -= 0.03;   asCartesianToRef(rho, theta, phi, ship.position) }
-        if (map['d']) { phi += 0.03;   asCartesianToRef(rho, theta, phi, ship.position) }
-        if (map['w']) { theta -= 0.03; asCartesianToRef(rho, theta, phi, ship.position) }
-        if (map['s']) { theta += 0.03; asCartesianToRef(rho, theta, phi, ship.position) }
-
-        // Have q, e, and space be the rotational controls for now
-        if (map['q'] || map['e']) {
-            //--------------------------------------------------------------------------------------//
-            // TODO: Looks like phi and theta do not change if only using q, space, e to get around
-            //       via rotations. Does that matter?
-            //       console.log('(phi, theta):', phi, theta)
-            //--------------------------------------------------------------------------------------//
-            // TODO: IDEA: Is turning at the poles faster than turning at equator?
-            //       Does this mean turn myAngle changes should be weighted?
-            if (map['q']) {
-                myAngle -= 0.05 // TODO: mod under 0
+        if (map['a'] || map['d']) {
+            if (map['a']) {
+                myAngle -= turnSpeed
+                // TODO: mod under 0?
             }
-            if (map['e']) {
-                myAngle += 0.05 // TODO: mod past 2pi
+            if (map['d']) {
+                myAngle += turnSpeed
+                // TODO: mod past 2pi?
             }
-            // Caution: These are flipped to match what should happen if you add the value
-            //          to the spherical coordinate if you move forward on that vector.
-            //          (i.e., looking  "left" => cosine => -1 from phi
-            //                 looking "right" => cosine => +1   to phi
-            //                 looking    "up" =>   sine => -1 from theta
-            //                 looking  "down" =>   sine => +1   to theta
-            dphi = -Math.cos(myAngle)
-            dtheta = -Math.sin(myAngle)
-            // console.log(ship.rotationQuaternion)
 
             // Because the origin and rotation axis will be realigned, reset the angle
             oAngle = 0
@@ -224,22 +201,12 @@ var createScene = function () {
             // Move ship to arrow
             BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
             ship.position.copyFrom(v1cache)
-            //-----------------------------------------------------------------------------//
-            // TODO: Why is it resetting?
-            // TODO: Remember, the "movement" angle starts at where the ship is
-            // TODO: Also, align ship facing with arrow facing somehow?
-            // TODO: Is there any possibility of moving the ship via dphi and dtheta but also
-            //       deriving the vector the ship should be looking towards from the arrow?
-            //       Maybe use the same direction by calling arrow.getDirection(...) ?
-            //-----------------------------------------------------------------------------//
+            // TODO: Should this align the ship with the arrow right now so that hemisphere
+            //       changes don't cause direction flip?
         }
-        if (map[' ']) {
-            // Instead of doing the next few lines, must follow the great circle...
-            // | phi +=   dphi   * 0.05
-            // | theta += dtheta * 0.05
-            // | asCartesianToRef(rho, theta, phi, ship.position)
-            // ...by incrementing the origin's rotation angle
-            oAngle += 0.05
+        if (map['w']) {
+            // Follow the great circle by incrementing the origin's rotation angle
+            oAngle += moveSpeed
         }
 
         // 1) First, re-straighten the ship
@@ -250,12 +217,12 @@ var createScene = function () {
         BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
         scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
 
-        // 1) First, point the origin +y at ship
+        // 3) First, point the origin +y at ship
         ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
         v2cache.copyFrom(ship.position)
         BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
         BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
-        // 2) Then, combine this rotation with the "movement" rotation
+        // 4) Then, combine this rotation with the "movement" rotation
         BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, q1cache)
         origin.rotationQuaternion.multiplyToRef(q1cache, origin.rotationQuaternion)
 
