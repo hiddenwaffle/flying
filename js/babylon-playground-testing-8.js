@@ -90,7 +90,7 @@ var createScene = function () {
   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
   light.intensity = 0.7;
 
-  // Params: name, subdivs, size, scene
+  // World
   var sphere = BABYLON.MeshBuilder.CreateSphere('sphere1', { segments: 16 }, scene);
   sphere.scaling = new BABYLON.Vector3(2, 2, 2)
   sphere.bakeCurrentTransformIntoVertices()
@@ -144,6 +144,14 @@ var createScene = function () {
   // "movement" rotation for origin box
   oAngle = 0
   oAxis = new BABYLON.Vector3(1, 0, 0)
+
+  // The "visible ship", a cone arrow
+  const arrow = BABYLON.MeshBuilder.CreateCylinder('arrow', { diameterTop: 0 }, scene)
+  arrow.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
+  arrow.rotate(BABYLON.Axis.X, Math.PI / 2)
+  arrow.bakeCurrentTransformIntoVertices()
+  arrow.parent = origin
+  arrow.position.y = 1
 
   // Draw visualization: line from origin to ship
   var originToShipRay = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
@@ -215,7 +223,7 @@ var createScene = function () {
           console.log(ship.rotationQuaternion)
 
           // Because the origin and rotation axis will be realigned, reset the angle
-          oAngle = 0
+          // oAngle = 0
       }
       if (map[' ']) {
           // // Instead of doing the next few lines, must follow the great circle
@@ -224,8 +232,13 @@ var createScene = function () {
           // asCartesianToRef(rho, theta, phi, ship.position)
           // debug()
 
-          oAngle += 0.05
+          oAngle = 0.05
       }
+
+      // Move ship to arrow
+      BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
+      ship.position.copyFrom(v1cache)
+      // TODO: Face ship to the same direction as arrow? Reset its facing angle?
 
       // 1) First, point the origin +y at ship
       ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
