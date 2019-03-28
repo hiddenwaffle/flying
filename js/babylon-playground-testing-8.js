@@ -218,14 +218,13 @@ var createScene = function () {
           oAngle = 0
       }
       if (map[' ']) {
-          oAngle += 0.01
-          BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, origin.rotationQuaternion)
-
           // // Instead of doing the next three lines, must follow the great circle
           // phi +=   dphi   * 0.05
           // theta += dtheta * 0.05
           // asCartesianToRef(rho, theta, phi, ship.position)
           // debug()
+
+          oAngle += 0.01
       }
 
       // 1) First, point the origin +y at ship
