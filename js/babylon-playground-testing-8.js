@@ -194,15 +194,13 @@ var createScene = function () {
       if (map['s']) { theta += 0.03 ; debug()}
       asCartesianToRef(rho, theta, phi, ship.position)
 
-      // Re-straighten the ship
+      // 1) First, re-straighten the ship
       ship.position.normalizeToRef(myAxis) // TODO: Does copy matter? And does normalization matter?
       ship.alignWithNormal(myAxis)
       scratch2.copyFrom(ship.rotationQuaternion)
-
-      // Combine the quaternions into the ship's quaternion
+      // 2) Then, combine the quaternions into the ship's quaternion
       BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
       scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
-
 
       // Have q, e, and space be the rotational controls for now
       if (map['q'] || map['e']) {
@@ -220,10 +218,17 @@ var createScene = function () {
           //                 looking  "down" =>   sine => +1   to theta
           dphi   = -Math.cos(myAngle)
           dtheta = -Math.sin(myAngle)
-          console.log(ship.rotationQuaternion)
+          // console.log(ship.rotationQuaternion)
 
           // Because the origin and rotation axis will be realigned, reset the angle
-          // oAngle = 0
+          oAngle = 0
+
+          // Move ship to arrow
+          BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
+          ship.position.copyFrom(v1cache)
+          // TODO: Why is it resetting?
+          // TODO: Remember, the "movement" angle starts at where the ship is
+          // TODO: Also, align ship facing with arrow facing somehow?
       }
       if (map[' ']) {
           // // Instead of doing the next few lines, must follow the great circle
@@ -232,13 +237,8 @@ var createScene = function () {
           // asCartesianToRef(rho, theta, phi, ship.position)
           // debug()
 
-          oAngle = 0.05
+          oAngle += 0.05
       }
-
-      // Move ship to arrow
-      BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
-      ship.position.copyFrom(v1cache)
-      // TODO: Face ship to the same direction as arrow? Reset its facing angle?
 
       // 1) First, point the origin +y at ship
       ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
@@ -270,6 +270,8 @@ var createScene = function () {
           new BABYLON.Vector3(0, 0, 0), // origin in local mesh
           2 // length
       )
+  }
+  scene.afterRender = () => {
   }
 
   return scene;
