@@ -218,7 +218,7 @@ var createScene = function () {
           oAngle = 0
       }
       if (map[' ']) {
-          // // Instead of doing the next three lines, must follow the great circle
+          // // Instead of doing the next few lines, must follow the great circle
           // phi +=   dphi   * 0.05
           // theta += dtheta * 0.05
           // asCartesianToRef(rho, theta, phi, ship.position)
