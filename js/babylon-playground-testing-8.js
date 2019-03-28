@@ -224,7 +224,7 @@ var createScene = function () {
           // asCartesianToRef(rho, theta, phi, ship.position)
           // debug()
 
-          oAngle += 0.01
+          oAngle += 0.05
       }
 
       // 1) First, point the origin +y at ship
