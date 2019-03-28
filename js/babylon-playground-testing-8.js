@@ -142,8 +142,8 @@ var createScene = function () {
   origin.rotationQuaternion = new BABYLON.Quaternion()
 
   // "movement" rotation for origin box
-  oAxis = new BABYLON.Vector3(1, 0, 0)
   oAngle = 0
+  oAxis = new BABYLON.Vector3(1, 0, 0)
 
   // Draw visualization: line from origin to ship
   var originToShipRay = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
@@ -212,20 +212,27 @@ var createScene = function () {
           //                 looking  "down" =>   sine => +1   to theta
           dphi   = -Math.cos(myAngle)
           dtheta = -Math.sin(myAngle)
-
-          // Point origin +y at ship
-          ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
-          v2cache.copyFrom(ship.position)
-          BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
-          BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
+          console.log(ship.rotationQuaternion)
       }
       if (map[' ']) {
-          // Instead of doing the next three lines, must follow the great circle
-          phi +=   dphi   * 0.05
-          theta += dtheta * 0.05
-          asCartesianToRef(rho, theta, phi, ship.position)
-          debug()
+          oAngle += 0.01
+          BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, origin.rotationQuaternion)
+
+          // // Instead of doing the next three lines, must follow the great circle
+          // phi +=   dphi   * 0.05
+          // theta += dtheta * 0.05
+          // asCartesianToRef(rho, theta, phi, ship.position)
+          // debug()
       }
+
+      // 1) Point origin +y at ship
+      ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
+      v2cache.copyFrom(ship.position)
+      BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
+      BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
+      // 2) Adjust rotation to include "movement" quaternion
+      BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, q1cache)
+      origin.rotationQuaternion.multiplyToRef(q1cache, origin.rotationQuaternion)
 
       // Visualize the line from origin to ship
       originToShipRayHelper.attachToMesh(
