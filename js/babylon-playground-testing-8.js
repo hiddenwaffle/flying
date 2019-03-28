@@ -213,6 +213,9 @@ var createScene = function () {
           dphi   = -Math.cos(myAngle)
           dtheta = -Math.sin(myAngle)
           console.log(ship.rotationQuaternion)
+
+          // Because the origin and rotation axis will be realigned, reset the angle
+          oAngle = 0
       }
       if (map[' ']) {
           oAngle += 0.01
@@ -225,12 +228,12 @@ var createScene = function () {
           // debug()
       }
 
-      // 1) Point origin +y at ship
+      // 1) First, point the origin +y at ship
       ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
       v2cache.copyFrom(ship.position)
       BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
       BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
-      // 2) Adjust rotation to include "movement" quaternion
+      // 2) Then, combine this rotation with the "movement" rotation
       BABYLON.Quaternion.RotationAxisToRef(oAxis, oAngle, q1cache)
       origin.rotationQuaternion.multiplyToRef(q1cache, origin.rotationQuaternion)
 
