@@ -226,9 +226,14 @@ var createScene = function () {
           // Move ship to arrow
           BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
           ship.position.copyFrom(v1cache)
+          //-----------------------------------------------------------------------------//
           // TODO: Why is it resetting?
           // TODO: Remember, the "movement" angle starts at where the ship is
           // TODO: Also, align ship facing with arrow facing somehow?
+          // TODO: Is there any possibility of moving the ship via dphi and dtheta but also
+          //       deriving the vector the ship should be looking towards from the arrow?
+          //       Maybe use the same direction by calling arrow.getDirection(...) ?
+          //-----------------------------------------------------------------------------//
       }
       if (map[' ']) {
           // // Instead of doing the next few lines, must follow the great circle
