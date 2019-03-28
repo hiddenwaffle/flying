@@ -188,14 +188,15 @@ var createScene = function () {
 
     scene.beforeRender = () => {
         // TODO: mod phi past 2pi or theta past pi, and under 0 for both
-        if (map['a']) { phi -= 0.03; debug() }
-        if (map['d']) { phi += 0.03; debug() }
-        if (map['w']) { theta -= 0.03; debug() }
-        if (map['s']) { theta += 0.03; debug() }
-        asCartesianToRef(rho, theta, phi, ship.position)
+        if (map['a']) { phi -= 0.03;   asCartesianToRef(rho, theta, phi, ship.position) }
+        if (map['d']) { phi += 0.03;   asCartesianToRef(rho, theta, phi, ship.position) }
+        if (map['w']) { theta -= 0.03; asCartesianToRef(rho, theta, phi, ship.position) }
+        if (map['s']) { theta += 0.03; asCartesianToRef(rho, theta, phi, ship.position) }
 
         // Have q, e, and space be the rotational controls for now
         if (map['q'] || map['e']) {
+            // TODO: IDEA: Is turning at the poles faster than turning at equator?
+            //       Does this mean turn myAngle changes should be weighted?
             if (map['q']) {
                 myAngle -= 0.05 // TODO: mod under 0
             }
@@ -228,12 +229,11 @@ var createScene = function () {
             //-----------------------------------------------------------------------------//
         }
         if (map[' ']) {
-            // // Instead of doing the next few lines, must follow the great circle
-            // phi +=   dphi   * 0.05
-            // theta += dtheta * 0.05
-            // asCartesianToRef(rho, theta, phi, ship.position)
-            // debug()
-
+            // Instead of doing the next few lines, must follow the great circle...
+            // | phi +=   dphi   * 0.05
+            // | theta += dtheta * 0.05
+            // | asCartesianToRef(rho, theta, phi, ship.position)
+            // ...by incrementing the origin's rotation angle
             oAngle += 0.05
         }
 
