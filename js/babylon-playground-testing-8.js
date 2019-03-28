@@ -195,6 +195,11 @@ var createScene = function () {
 
         // Have q, e, and space be the rotational controls for now
         if (map['q'] || map['e']) {
+            //--------------------------------------------------------------------------------------//
+            // TODO: Looks like phi and theta do not change if only using q, space, e to get around
+            //       via rotations. Does that matter?
+            //       console.log('(phi, theta):', phi, theta)
+            //--------------------------------------------------------------------------------------//
             // TODO: IDEA: Is turning at the poles faster than turning at equator?
             //       Does this mean turn myAngle changes should be weighted?
             if (map['q']) {
