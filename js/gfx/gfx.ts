@@ -133,7 +133,9 @@ export class Gfx {
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
+    skybox.parent = cot
 
+    skybox.rotate(BABYLON.Axis.X, 0.75)
     scene.registerBeforeRender(() => {
       if (map['w']) {
           cot.rotate(BABYLON.Axis.X, 0.02)
@@ -143,9 +145,11 @@ export class Gfx {
       }
       if (map['a']) {
           cot.rotate(BABYLON.Axis.Y, -0.04)
+          skybox.rotate(BABYLON.Axis.Y, 0.05)
       }
       if (map['d']) {
           cot.rotate(BABYLON.Axis.Y, 0.04)
+          skybox.rotate(BABYLON.Axis.Y, -0.05)
       }
     })
 
