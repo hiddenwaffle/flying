@@ -28,6 +28,7 @@ var createScene = function () {
   sphere.material = sphereMaterial;
 
   var cot = new BABYLON.TransformNode('cot')
+  cot.rotationQuaternion = new BABYLON.Quaternion()
 
   // The "visible ship", a cone arrow
   const arrow = BABYLON.MeshBuilder.CreateCylinder('arrow', { diameterTop: 0 }, scene)
