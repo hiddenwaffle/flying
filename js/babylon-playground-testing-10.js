@@ -55,8 +55,8 @@ var createScene = function () {
     // "top"
     var top = BABYLON.MeshBuilder.CreateBox('top', {}, scene)
     top.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
-    top.position.y = 0.05 / 2
     top.bakeCurrentTransformIntoVertices()
+    top.position.y = 0.05 / 2
     top.parent = ship
     // Point toward front of ship
     var ray = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
@@ -68,6 +68,13 @@ var createScene = function () {
         new BABYLON.Vector3(0, 0, 0.04), // origin in local mesh
         0.3 // length
     )
+    // "windshield", a box in front of "top", used to determine a tangent vector to the sphere?
+    var windshield = BABYLON.MeshBuilder.CreateBox('windshield', {}, scene)
+    windshield.scaling = new BABYLON.Vector3(0.025, 0.025, 0.025)
+    windshield.bakeCurrentTransformIntoVertices()
+    windshield.position.y = 0.05 / 2
+    windshield.position.z = 0.05
+    windshield.parent = ship
 
     // // Starting at north pole to easily set forward vector
     // ship.position.set(0, 1, 0)
@@ -86,9 +93,8 @@ var createScene = function () {
 
     const alignShip = () => {
         // Ensure ship orbit distance is constant
-        ship.position.normalizeToRef(v1cache)
+        ship.position.normalize()
         // TODO: Here, with a real planet, scale v1cache up to orbit distance from origin
-        ship.position.copyFrom(v1cache)
 
         // Align top of ship with position vector
         ship.alignWithNormal(ship.position)
@@ -97,6 +103,12 @@ var createScene = function () {
 
     scene.beforeRender = () => {
         if (map['a']) {
+            BABYLON.Vector3.TransformCoordinatesToRef(top.position, top.parent.getWorldMatrix(), v1cache)
+            BABYLON.Vector3.TransformCoordinatesToRef(windshield.position, windshield.parent.getWorldMatrix(), v2cache)
+            v2cache.subtractToRef(v1cache, v3cache)
+            v3cache.normalize()
+            console.log('--->', v3cache)
+            console.log('    ', ship.getDirection(BABYLON.Axis.Z))
         }
         if (map['d']) {
         }

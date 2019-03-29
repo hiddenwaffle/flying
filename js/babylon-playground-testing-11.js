@@ -145,6 +145,8 @@ var createScene = function () {
     const turnSpeed = 0.05
     const moveSpeed = 0.05
 
+    let meow = false
+
     scene.beforeRender = () => {
         if (map['a'] || map['d']) {
             if (map['a']) {
@@ -156,20 +158,14 @@ var createScene = function () {
                 // TODO: mod past 2pi?
             }
 
-            // Because the origin and rotation axis will be realigned, reset the angle
+            // Because the origin and rotation axis will be realigned, reset the "movement" angle
             oAngle = 0
 
             // Move ship to arrow
             BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v1cache)
             ship.position.copyFrom(v1cache)
 
-            // Align the ship with the arrow so that hemisphere changes do not cause direction flip
-            // TODO: Not working?
-            arrow.getDirectionToRef(BABYLON.Axis.Z, v1cache)
-            ship.getDirectionToRef(BABYLON.Axis.Z, v2cache)
-            // console.log('(arrow, ship) --> before', v1cache, v2cache)
-            ship.setDirection(v1cache)
-            // console.log('(arrow, ship)     after', v1cache, v2cache)
+            meow = true
         }
         if (map['w']) {
             oAngle += moveSpeed
@@ -186,9 +182,15 @@ var createScene = function () {
         BABYLON.Quaternion.RotationAxisToRef(myAxis, myAngle, scratch)
         scratch.multiplyToRef(scratch2, ship.rotationQuaternion)
 
-        // 3) First, point the origin +y at ship
-        ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
-        v2cache.copyFrom(ship.position)
+        // 3) Then, point the origin +y at ship OR arrow
+        if (meow) {
+            arrow.getDirectionToRef(BABYLON.Axis.X, v1cache)
+            BABYLON.Vector3.TransformCoordinatesToRef(arrow.position, arrow.parent.getWorldMatrix(), v2cache)
+            meow = false
+        } else {
+            ship.getDirectionToRef(BABYLON.Axis.X, v1cache)
+            v2cache.copyFrom(ship.position)
+        }
         BABYLON.Vector3.CrossToRef(v1cache, v2cache, v3cache)
         BABYLON.Quaternion.RotationQuaternionFromAxisToRef(v1cache, v2cache, v3cache, origin.rotationQuaternion)
         // 4) Then, combine this rotation with the "movement" rotation
