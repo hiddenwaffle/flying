@@ -41,21 +41,32 @@ export class Gfx {
       map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
     }))
 
-    const camera = new BABYLON.UniversalCamera(
-      'camera',
-      new BABYLON.Vector3(0, 0, 0),
-      scene
-    )
-    camera.attachControl(this.canvasTmp)
-    const sphere0 = BABYLON.MeshBuilder.CreateSphere('sphere0', { }, scene)
-    sphere0.scaling = new BABYLON.Vector3(0.1, 0.1, 0.1)
-    sphere0.position.y = 42.5
-    // camera.lockedTarget = sphere0
-    camera.parent = sphere0
-    camera.position.x = 0 // TODO: Make dynamic
-    camera.position.y = 100
-    camera.position.z = -60 // TODO: Make dynamic
-    camera.setTarget(new BABYLON.Vector3(0, 0, 40))
+    // This mesh's quaternion represents the currnt position and direction of the arrow:
+    const cot = new BABYLON.TransformNode('cot')
+    cot.rotationQuaternion = new BABYLON.Quaternion()
+
+    // Invisible "Arrow" pointing in the direction we want to go:
+    const arrow = new BABYLON.TransformNode('arrow')
+    arrow.position.y = 45
+    arrow.parent = cot
+
+    // Flip 'thirdPersonCamera' to false to observe motion from off-world:
+    const thirdPersonCamera = true
+    let camera: any
+    if (thirdPersonCamera) {
+        // 3rd person view cam, behind the arrow:
+        camera = new BABYLON.UniversalCamera(
+        'camera',
+        new BABYLON.Vector3(0, 10, -5.5),
+        scene
+        )
+        camera.parent = arrow
+    } else {
+        camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(-2, 1.4, 1.4), scene)
+    }
+    camera.attachControl(this.canvasTmp, true)
+    // const cameraTarget = new BABYLON.Vector3(1, 0, 0)
+    camera.setTarget(new BABYLON.Vector3(0, 1, 2))
 
     const assetsManager = new BABYLON.AssetsManager(scene)
 
@@ -70,16 +81,14 @@ export class Gfx {
       spaceshipMeshes = task.loadedMeshes
       task.loadedMeshes[0].material.diffuseColor = new BABYLON.Color3(0.25, 0.5, 1)
       for (const mesh of task.loadedMeshes) {
-        mesh.scaling = new BABYLON.Vector3(2, 2, 2)
-        mesh.parent = sphere0
+        mesh.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2)
+        mesh.parent = arrow
       }
     }
     spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
       console.log('ERROR', message, exception)
     }
 
-
-    const sphere1 = BABYLON.MeshBuilder.CreateSphere('sphere1', { }, scene)
     const planetMeshAddMeshTask = assetsManager.addMeshTask(
       'planetMesh',
       '',
@@ -100,33 +109,11 @@ export class Gfx {
 
     assetsManager.load()
 
-
-    // BABYLON.AbstractMesh.prototype.spin = function (axis: any, rads: any, speed: any) {
-    //     var ease = new BABYLON.CubicEase();
-    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation.' + axis, speed, 120, this.rotation[axis], this.rotation[axis]+rads, 0, ease);
-    // }
-    // BABYLON.ArcRotateCamera.prototype.spin = function (property: any, rads: any, speed: any) {
-    //     var ease = new BABYLON.CubicEase();
-    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, property, speed, 120, this[property], this[property]+rads, 0, ease);
-    // }
-    // BABYLON.AbstractMesh.prototype.spinTo = function (unused: any, targetRot: any, speed: any) {
-    //     var ease = new BABYLON.CubicEase();
-    //     ease.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-    //   BABYLON.Animation.CreateAndStartAnimation('at4', this, 'rotation', speed, 120, this.rotation, targetRot, 0, ease);
-    // }
-    // setTimeout(() => {
-    //   sphere0.spin('y', Math.PI / 4, 50)
-    //   camera.spin('alpha', -Math.PI / 4, 50)
-    // }, 1000)
-
     const light = new BABYLON.HemisphericLight(
       'light',
       new BABYLON.Vector3(-1, 1, -1), // TODO: Align with skybox sun?
       scene
     )
-
 
     const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, scene)
     const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', scene)
@@ -147,63 +134,18 @@ export class Gfx {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
 
-    // sphere0.position = new BABYLON.Vector3(0, -42.5, 0)
-    // sphere0.lookAt(sphere1.position)
-    sphere0.parent = sphere1
-
-    let axis = new BABYLON.Vector3(1, 0, 0)
-    let angle = 0 // -Math.PI / 8
-    sphere1.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(axis, angle)
-
-    let yaxis = new BABYLON.Vector3(0, 1, 0)
-    let yangle = 0
-    sphere0.rotationQuaternion = new BABYLON.Quaternion.RotationAxis(yaxis, yangle)
-
-    // const inbetween = BABYLON.MeshBuilder.CreateSphere('inbetween', { }, scene)
-    // var inbetweenMaterial = new BABYLON.StandardMaterial('inbetweenMaterial', scene);
-    // inbetweenMaterial.diffuseColor = new BABYLON.Color3(1, 0.5, 1);
-    // inbetweenMaterial.alpha = 0.3
-    // inbetween.material = inbetweenMaterial;
-
-    // var angle = Math.acos(BABYLON.Vector3.Dot(v1, v2));
-    // var axis = BABYLON.Vector3.Cross(v1,v2);
-    // var quaternion = BABYLON.Quaternion.RotationAxis(axis, angle);
-    // var matrix = BABYLON.Matrix.Identity();
-    // BABYLON.Matrix.FromQuaternionToRef(quaternion, matrix);
-
     scene.registerBeforeRender(() => {
-      const cameraWorldPosition = BABYLON.Vector3.TransformCoordinates(camera.position, camera.parent.getWorldMatrix())
-      const sphere0WorldPosition = BABYLON.Vector3.TransformCoordinates(sphere0.position, sphere0.parent.getWorldMatrix())
-      // inbetween.position = cameraWorldPosition.add(sphere0WorldPosition).scale(0.5)
-      console.clear()
-      console.log('camera   ', cameraWorldPosition)
-      // console.log('inbetween', inbetween.position)
-      console.log('sphere0  ', sphere0WorldPosition)
-      console.log('---')
-      // const diff = cameraWorldPosition.subtract(sphere0WorldPosition)
-      // console.log('diff     ', diff)
-      console.log('sphere1.rotationQuaternion', sphere1.rotationQuaternion)
-      console.log('---')
-      console.log('axis ', axis)
-      console.log('angle', angle)
-
+      if (map['w']) {
+          cot.rotate(BABYLON.Axis.X, 0.02)
+      }
+      if (map['s']) {
+          cot.rotate(BABYLON.Axis.X, -0.005)
+      }
       if (map['a']) {
-        // TODO: I think what this actually needs to do is rotate the "axis" variable
-        // in such a way that it represents rotatin the axis around the current normal
-        // of the spaceship above the origin
-        // But where does a quaternion start its rotation?
-        yangle -= 0.01
-        BABYLON.Quaternion.RotationAxisToRef(yaxis, yangle, sphere0.rotationQuaternion)
-        // Try to reset the main quaternion starting from the current position...
-        axis = BABYLON.Vector3.Cross(cameraWorldPosition, sphere0WorldPosition)
-        // angle = 0 // TODO: Where does angle 0 start?
-        BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
+          cot.rotate(BABYLON.Axis.Y, -0.04)
       }
       if (map['d']) {
-      }
-      if (map['w']) {
-        angle += 0.01
-        BABYLON.Quaternion.RotationAxisToRef(axis, angle, sphere1.rotationQuaternion)
+          cot.rotate(BABYLON.Axis.Y, 0.04)
       }
     })
 
