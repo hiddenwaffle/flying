@@ -1,5 +1,4 @@
-// Movement via
-
+// Movement by local coordinates only
 
 // Helper function from:
 // https://www.babylonjs-playground.com/#MYY6S#7
@@ -50,8 +49,6 @@ var createScene = function () {
     var ship = BABYLON.MeshBuilder.CreateBox('ship', {}, scene);
     ship.scaling = new BABYLON.Vector3(0.1, 0.02, 0.1)
     ship.bakeCurrentTransformIntoVertices()
-    // Ensure that quaternions are used for rotations (going to use for rotations around y-axis)
-    ship.rotationQuaternion = new BABYLON.Quaternion()
     var shipMaterial = new BABYLON.StandardMaterial('shipMaterial', scene)
     shipMaterial.alpha = 0.95
     ship.material = shipMaterial
@@ -61,7 +58,19 @@ var createScene = function () {
     top.position.y = 0.05 / 2
     top.bakeCurrentTransformIntoVertices()
     top.parent = ship
+    // Point toward front of ship
+    var ray = new BABYLON.Ray(BABYLON.Vector3.Zero(), BABYLON.Vector3.Zero(), 1); // Values do not seem to matter when attached to mesh?
+    var rayHelper = new BABYLON.RayHelper(ray);
+    rayHelper.show(scene);
+    rayHelper.attachToMesh(
+        ship,
+        new BABYLON.Vector3(0, 0, 1), // direction in local mesh
+        new BABYLON.Vector3(0, 0, 0.04), // origin in local mesh
+        0.3 // length
+    )
 
+    // // Starting at north pole to easily set forward vector
+    // ship.position.set(0, 1, 0)
     // Starting position
     let rho = 1
     let phi = 2 * Math.random() * Math.PI // 0 <=   phi <= 2PI
@@ -69,23 +78,22 @@ var createScene = function () {
     let myAngle = 0
     asCartesianToRef(rho, phi, theta, ship.position)
 
-    // Origin sphere at 0, 0, 0
-    var origin = BABYLON.MeshBuilder.CreateSphere('origin', { segments: 16 }, scene);
-    origin.scaling = new BABYLON.Vector3(0.05, 0.05, 0.05)
-    origin.bakeCurrentTransformIntoVertices()
-    origin.rotationQuaternion = new BABYLON.Quaternion()
-
-    // Cache variables for beforeRender callback, use with caution
+    // Cache variables, use with caution
     const q1cache = new BABYLON.Quaternion()
-    const q2cache = new BABYLON.Quaternion()
     const v1cache = new BABYLON.Vector3()
     const v2cache = new BABYLON.Vector3()
     const v3cache = new BABYLON.Vector3()
-    const m1cache = new BABYLON.Matrix()
-    const zaxis = new BABYLON.Vector3(0, 0, 1)
 
-    const turnSpeed = 0.05
-    const moveSpeed = 0.05
+    const alignShip = () => {
+        // Ensure ship orbit distance is constant
+        ship.position.normalizeToRef(v1cache)
+        // TODO: Here, with a real planet, scale v1cache up to orbit distance from origin
+        ship.position.copyFrom(v1cache)
+
+        // Align top of ship with position vector
+        ship.alignWithNormal(ship.position)
+    }
+    alignShip()
 
     scene.beforeRender = () => {
         if (map['a']) {
@@ -93,7 +101,11 @@ var createScene = function () {
         if (map['d']) {
         }
         if (map['w']) {
+            ship.movePOV(0, 0, -0.02)
         }
+        if (map['s']) {
+        }
+        alignShip()
     }
     scene.afterRender = () => {
     }
