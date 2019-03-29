@@ -134,8 +134,8 @@ export class Gfx {
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
     skybox.material = skyboxMaterial
     skybox.parent = cot
+    skybox.rotate(BABYLON.Axis.X, 0.75) // Align to horizon
 
-    skybox.rotate(BABYLON.Axis.X, 0.75)
     scene.registerBeforeRender(() => {
       if (map['w']) {
           cot.rotate(BABYLON.Axis.X, 0.02)
@@ -152,8 +152,6 @@ export class Gfx {
           skybox.rotate(BABYLON.Axis.Y, -0.05)
       }
     })
-
-    // TODO: Try rotating world around and using that to store position?
 
     this.engine.runRenderLoop(() => {
       scene.render()
