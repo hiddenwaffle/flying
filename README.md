@@ -22,6 +22,10 @@ yarn run build
 mv dist docs
 ```
 
+## Notes
+
+This is based on a simple spherical movement concept that I experimented with here: https://playground.babylonjs.com/#GSZYZL
+
 ## Credits
 
 Skybox
