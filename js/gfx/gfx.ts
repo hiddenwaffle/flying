@@ -151,6 +151,7 @@ export class Gfx {
           cot.rotate(BABYLON.Axis.Y, 0.04)
           skybox.rotate(BABYLON.Axis.Y, -0.05)
       }
+      skybox.rotate(BABYLON.Axis.Y, -0.0004) // TODO: Weight in -/+ range by something
     })
 
     this.engine.runRenderLoop(() => {
