@@ -41,7 +41,7 @@ export class Gfx {
       map[evt.sourceEvent.key] = evt.sourceEvent.type == 'keydown'
     }))
 
-    // This mesh's quaternion represents the currnt position and direction of the arrow:
+    // This mesh's quaternion represents the current position and direction of the arrow:
     const cot = new BABYLON.TransformNode('cot')
     cot.rotationQuaternion = new BABYLON.Quaternion()
 
@@ -137,11 +137,12 @@ export class Gfx {
     skybox.rotate(BABYLON.Axis.X, 0.75) // Align to horizon
 
     scene.registerBeforeRender(() => {
+      cot.rotate(BABYLON.Axis.X, 0.0004)
       if (map['w']) {
           cot.rotate(BABYLON.Axis.X, 0.02)
       }
       if (map['s']) {
-          cot.rotate(BABYLON.Axis.X, -0.005)
+          cot.rotate(BABYLON.Axis.X, -0.0075)
       }
       if (map['a']) {
           cot.rotate(BABYLON.Axis.Y, -0.04)
