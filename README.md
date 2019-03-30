@@ -26,6 +26,10 @@ mv dist docs
 
 This is based on a simple spherical movement concept that I experimented with here: https://playground.babylonjs.com/#GSZYZL
 
+The mathematics behind the movement are located here: https://github.com/BabylonJS/Babylon.js/blob/a001298124c04e3610ed06dc31d075ba799d047f/src/Meshes/transformNode.ts#L796
+
+The gist is that for the given mesh, calculate a quaterion based on the given axis and angle, then multiply it by the mesh's current quaternion to get the new quaternion for the mesh's center of rotation.
+
 ## Credits
 
 Skybox
