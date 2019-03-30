@@ -57,16 +57,16 @@ export class Gfx {
         // 3rd person view cam, behind the arrow:
         camera = new BABYLON.UniversalCamera(
         'camera',
-        new BABYLON.Vector3(0, 10, -5.5),
+        new BABYLON.Vector3(0, 11.5, -4),
         scene
         )
         camera.parent = arrow
+        camera.setTarget(new BABYLON.Vector3(0, 1, 3))
     } else {
         camera = new BABYLON.UniversalCamera("camera1", new BABYLON.Vector3(-2, 1.4, 1.4), scene)
+        camera.setTarget(new BABYLON.Vector3(0, 0, 0))
     }
     camera.attachControl(this.canvasTmp, true)
-    // const cameraTarget = new BABYLON.Vector3(1, 0, 0)
-    camera.setTarget(new BABYLON.Vector3(0, 1, 2))
 
     const assetsManager = new BABYLON.AssetsManager(scene)
 
