@@ -1,6 +1,6 @@
 // TODO: Clean this up
 
-import { environment } from './environment';
+import { environment } from './environment'
 
 /**
  * From https://developer.mozilla.org/en-US/docs/Web/API/Console
@@ -25,22 +25,22 @@ type ConsoleMethod =
   'timeEnd' |
   'timeStamp' |
   'trace' |
-  'warn';
+  'warn'
 
-const allowedInProduction: ConsoleMethod[] = ['warn', 'error'];
+const allowedInProduction: ConsoleMethod[] = ['warn', 'error']
 
 /**
  * Assists with preventing non-warn/error statements from displaying in production.
  */
 export function log(methodName: ConsoleMethod, ...args: any[]) {
   if (environmentAllows(methodName)) {
-    const method = (console as any)[methodName];
+    const method = (console as any)[methodName]
     if (method) {
       try {
-        method(...args);
+        method(...args)
       } catch (e) {
         // tslint:disable-next-line:no-console
-        console.error(`Error caught when calling console.${methodName}(${args})`, e);
+        console.error(`Error caught when calling console.${methodName}(${args})`, e)
       }
     }
   }
@@ -48,8 +48,8 @@ export function log(methodName: ConsoleMethod, ...args: any[]) {
 
 function environmentAllows(methodName: ConsoleMethod): boolean {
   if (environment.production) {
-    return allowedInProduction.includes(methodName);
+    return allowedInProduction.includes(methodName)
   } else {
-    return true;
+    return true
   }
 }

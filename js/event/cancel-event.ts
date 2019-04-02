@@ -1,10 +1,10 @@
 import {
   EventType,
   AbstractEvent,
-} from './event-bus';
+} from './event-bus'
 
 export class CancelEvent extends AbstractEvent {
   getType() {
-    return EventType.CancelEvent;
+    return EventType.CancelEvent
   }
 }

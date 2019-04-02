@@ -1,5 +1,5 @@
 import { singleton } from 'tsyringe'
-import { BabylonWrapper } from 'js/gfx/babylon-wrapper';
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Player } from './player'
 
 @singleton()

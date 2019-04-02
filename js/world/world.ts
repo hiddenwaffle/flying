@@ -34,5 +34,7 @@ export class World {
   }
 
   step() {
+    this.skybox.step()
+    this.player.step()
   }
 }

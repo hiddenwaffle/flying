@@ -2,8 +2,8 @@ import './main.css'
 import { singleton } from 'tsyringe'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 
-const CONTAINER_ASPECT_WIDTH = 16;
-const CONTAINER_ASPECT_HEIGHT = 9;
+const CONTAINER_ASPECT_WIDTH = 16
+const CONTAINER_ASPECT_HEIGHT = 9
 
 /**
  * Determine how much to scale the given logical rectangle
@@ -19,15 +19,15 @@ function calculateScaleFactor(
   const scaleFactor = Math.min(
     actualWidth / logicalWidth,
     actualHeight / logicalHeight,
-  );
-  return scaleFactor;
+  )
+  return scaleFactor
 }
 
 function scaleContainer(canvas: HTMLCanvasElement, scaleFactor: number) {
-  const newWidth = Math.ceil(CONTAINER_ASPECT_WIDTH * scaleFactor);
-  const newHeight = Math.ceil(CONTAINER_ASPECT_HEIGHT * scaleFactor);
-  canvas.width = newWidth;
-  canvas.height = newHeight;
+  const newWidth = Math.ceil(CONTAINER_ASPECT_WIDTH * scaleFactor)
+  const newHeight = Math.ceil(CONTAINER_ASPECT_HEIGHT * scaleFactor)
+  canvas.width = newWidth
+  canvas.height = newHeight
 }
 
 function resizeHandler(canvas: HTMLCanvasElement, engine: any) {
@@ -37,7 +37,7 @@ function resizeHandler(canvas: HTMLCanvasElement, engine: any) {
     CONTAINER_ASPECT_WIDTH,
     CONTAINER_ASPECT_HEIGHT
   )
-  scaleContainer(canvas, containerScaleFactor);
+  scaleContainer(canvas, containerScaleFactor)
   engine.resize()
 }
 
@@ -55,7 +55,7 @@ export class Ui {
     const rh = () => {
       resizeHandler(this.canvas, this.engine)
     }
-    window.addEventListener('resize', rh);
+    window.addEventListener('resize', rh)
     rh()
   }
 }

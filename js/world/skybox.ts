@@ -12,19 +12,20 @@ import * as skyPz from 'js/gfx/textures/TropicalSunnyDay_pz.jpg'
 
 @singleton()
 export class Skybox {
-  private readonly cot: any
+  private readonly playerCot: any
   private readonly scene: any
+  private mesh: any
 
   constructor(
     player: Player,
     babylonWrapper: BabylonWrapper
   ) {
-    this.cot = player.cot
+    this.playerCot = player.cot
     this.scene = babylonWrapper.scene
   }
 
   start() {
-    const skybox = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, this.scene)
+    this.mesh = BABYLON.MeshBuilder.CreateBox('skyBox', { size: 1000 }, this.scene)
     const skyboxMaterial = new BABYLON.StandardMaterial('skyboxMaterial', this.scene)
     skyboxMaterial.backFaceCulling = false
     skyboxMaterial.reflectionTexture = BABYLON.CubeTexture.CreateFromImages(
@@ -41,8 +42,13 @@ export class Skybox {
     skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE
     skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0)
     skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0)
-    skybox.material = skyboxMaterial
-    skybox.parent = this.cot
-    skybox.rotate(BABYLON.Axis.X, 0.75) // Align to horizon
+    this.mesh.material = skyboxMaterial
+    this.mesh.parent = this.playerCot
+    this.mesh.rotate(BABYLON.Axis.X, 0.75) // Align to horizon
+  }
+
+  step() {
+    // Move clouds slightly when player is idle:
+    this.mesh.rotate(BABYLON.Axis.Y, -0.0004)
   }
 }
