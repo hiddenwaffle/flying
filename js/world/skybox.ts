@@ -1,14 +1,13 @@
-import { singleton } from 'tsyringe'
-import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
-import { Ui } from 'js/ui/ui'
-import { Player } from './player'
-
 import * as skyNx from 'js/gfx/textures/TropicalSunnyDay_nx.jpg'
 import * as skyNy from 'js/gfx/textures/TropicalSunnyDay_ny.jpg'
 import * as skyNz from 'js/gfx/textures/TropicalSunnyDay_nz.jpg'
 import * as skyPx from 'js/gfx/textures/TropicalSunnyDay_px.jpg'
 import * as skyPy from 'js/gfx/textures/TropicalSunnyDay_py.jpg'
 import * as skyPz from 'js/gfx/textures/TropicalSunnyDay_pz.jpg'
+
+import { singleton } from 'tsyringe'
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
+import { Player, Direction, leftDirections, rightDirections } from './player'
 
 @singleton()
 export class Skybox {
@@ -17,7 +16,7 @@ export class Skybox {
   private mesh: any
 
   constructor(
-    player: Player,
+    private readonly player: Player,
     babylonWrapper: BabylonWrapper
   ) {
     this.playerCot = player.cot
@@ -50,5 +49,13 @@ export class Skybox {
   step() {
     // Move clouds slightly when player is idle:
     this.mesh.rotate(BABYLON.Axis.Y, -0.0004)
+
+    // Rotate along with player turning
+    if (this.player.isTurningLeft()) {
+      this.mesh.rotate(BABYLON.Axis.Y, 0.05)
+    }
+    if (this.player.isTurningRight()) {
+      this.mesh.rotate(BABYLON.Axis.Y, -0.05)
+    }
   }
 }

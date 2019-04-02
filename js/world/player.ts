@@ -16,10 +16,10 @@ export enum Direction {
   Right
 }
 
-const forwardDirections   = [Direction.Forward, Direction.ForwardLeft, Direction.ForwardRight]
-const backwardDirections  = [Direction.Backward, Direction.BackwardLeft, Direction.BackwardRight]
-const leftDirections      = [Direction.Left, Direction.ForwardLeft, Direction.BackwardLeft]
-const rightDirections     = [Direction.Right, Direction.ForwardRight, Direction.BackwardRight]
+const forwardDirections       = [Direction.Forward, Direction.ForwardLeft, Direction.ForwardRight]
+const backwardDirections      = [Direction.Backward, Direction.BackwardLeft, Direction.BackwardRight]
+export const leftDirections   = [Direction.Left, Direction.ForwardLeft, Direction.BackwardLeft]
+export const rightDirections  = [Direction.Right, Direction.ForwardRight, Direction.BackwardRight]
 
 @singleton()
 export class Player extends Spaceship {
@@ -59,5 +59,13 @@ export class Player extends Spaceship {
 
   setDirection(direction: Direction) {
     this.direction = direction
+  }
+
+  isTurningLeft(): boolean {
+    return leftDirections.includes(this.direction)
+  }
+
+  isTurningRight(): boolean {
+    return rightDirections.includes(this.direction)
   }
 }
