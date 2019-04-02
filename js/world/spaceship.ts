@@ -4,7 +4,7 @@ import { singleton } from 'tsyringe'
 
 import * as spaceshipFile from 'js/gfx/models/spaceship.babylon.json'
 
-export class Spaceship extends Projectile {
+export abstract class Spaceship extends Projectile {
   private assetsManager: any
 
   constructor(

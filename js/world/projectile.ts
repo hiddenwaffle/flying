@@ -1,4 +1,4 @@
-export class Projectile {
+export abstract class Projectile {
   /**
    * Center of Rotation for the arrow.
    */
