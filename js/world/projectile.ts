@@ -1,4 +1,3 @@
-
 export class Projectile {
   /**
    * Center of Rotation for the arrow.
@@ -10,9 +9,6 @@ export class Projectile {
    */
   arrow: any
 
-  /** References the mesh to be displayed. */
-  mesh: any
-
   // These are for calculating turning, forward, and backward movement.
   accx: number
   accy: number
@@ -23,7 +19,7 @@ export class Projectile {
   maxvelx: number
   maxvely: number
 
-  constructor(mesh: any) {
+  constructor() {
     this.cot = new BABYLON.TransformNode('cot')
     // Ensure quaternion rotation.
     this.cot.rotationQuaternion = new BABYLON.Quaternion()
@@ -32,7 +28,5 @@ export class Projectile {
     // Default height to be slightly above the surface.
     this.arrow.position.y = 45
     this.arrow.parent = this.cot
-
-    this.mesh = mesh
   }
 }

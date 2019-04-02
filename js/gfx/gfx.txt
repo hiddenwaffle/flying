@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe'
-import { EngineWrapper } from './engine-wrapper'
+import { EngineWrapper } from './babylon-wrapper'
 import { Ui } from 'js/ui/ui'
 
 import * as skyNx from './textures/TropicalSunnyDay_nx.jpg'

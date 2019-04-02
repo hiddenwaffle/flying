@@ -1,16 +1,38 @@
-import { injectable } from 'tsyringe'
-import { Gfx } from 'js/gfx/gfx'
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
+import { Controller } from 'js/input/controller'
+import { singleton } from 'tsyringe'
+import { Ui } from 'js/ui/ui'
+import { World } from 'js/world/world'
 
-@injectable()
+@singleton()
 export class Game {
+  private canvas: HTMLCanvasElement
+  private engine: any
+  private scene: any
+
   constructor(
-    private gfx: Gfx
+    private ui: Ui,
+    private controller: Controller,
+    private world: World,
+    babylonWrapper: BabylonWrapper
   ) {
-    console.log('in Game#constructor()')
+    this.canvas = babylonWrapper.canvas
+    this.engine = babylonWrapper.engine
+    this.scene = babylonWrapper.scene
   }
 
   start() {
-    console.log('in Game#start()')
-    this.gfx.start()
+    this.ui.start()
+    this.controller.start()
+    this.world.start()
+    this.scene.registerBeforeRender(this.step.bind(this))
+    this.engine.runRenderLoop(() => {
+      this.scene.render()
+    })
+  }
+
+  step() {
+    this.controller.step()
+    this.world.step()
   }
 }

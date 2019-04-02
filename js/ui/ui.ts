@@ -1,6 +1,6 @@
 import './main.css'
-import { injectable } from 'tsyringe'
-import { EngineWrapper } from 'js/gfx/engine-wrapper'
+import { singleton } from 'tsyringe'
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 
 const CONTAINER_ASPECT_WIDTH = 16;
 const CONTAINER_ASPECT_HEIGHT = 9;
@@ -41,14 +41,14 @@ function resizeHandler(canvas: HTMLCanvasElement, engine: any) {
   engine.resize()
 }
 
-@injectable()
+@singleton()
 export class Ui {
   private canvas: HTMLCanvasElement
   private engine: any
 
-  constructor(engineWrapper: EngineWrapper) {
-    this.canvas = engineWrapper.canvas
-    this.engine = engineWrapper.engine
+  constructor(babylonWrapper: BabylonWrapper) {
+    this.canvas = babylonWrapper.canvas
+    this.engine = babylonWrapper.engine
   }
 
   start() {
