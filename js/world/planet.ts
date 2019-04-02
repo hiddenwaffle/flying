@@ -1,7 +1,7 @@
 import { singleton } from 'tsyringe'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 
-import * as planetFile from 'js/gfx/models/planet.babylon'
+import * as planetFile from 'js/gfx/models/planet.babylon.json'
 
 @singleton()
 export class Planet {

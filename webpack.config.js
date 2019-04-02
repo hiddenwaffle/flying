@@ -25,7 +25,12 @@ const config = {
         exclude: /node_modules/
       },
       {
-        test: /\.(png|jpg|babylon)$/,
+        // Must specify 'type' to specify that the loader emits JS
+        // and not JSON, due to "\.json" being included here.
+        // https://github.com/webpack/webpack/issues/6586#issuecomment-368677035
+        // https://stackoverflow.com/a/49083832
+        type: 'javascript/auto',
+        test: /\.(png|jpg|babylon\.json)$/,
         use: {
           loader: 'file-loader',
           options: {

@@ -6,6 +6,7 @@ declare const BABYLON: any
 // https://github.com/webpack-contrib/url-loader/issues/161#issuecomment-448569184
 declare module '*.png'
 declare module '*.jpg'
-declare module '*.babylon'
-
-// declare module '*.html'
+// Use .babylon.json instead of .babylon so that default MIME types for
+// webpack-dev-server can be used on the HTTP headers.
+declare module '*.babylon.json'
+declare module '*.json'
