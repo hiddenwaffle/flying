@@ -28,7 +28,7 @@ function generateId(): number {
 
 @singleton()
 export class Player extends Spaceship implements Mob {
-  remoteId: number
+  id: number
   private direction = Direction.Idle
 
   constructor(
@@ -36,13 +36,13 @@ export class Player extends Spaceship implements Mob {
     eventBus: EventBus
   ) {
     super(babylonWrapper)
-    this.remoteId = generateId()
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.direction = event.direction
     })
   }
 
   async start() {
+    this.id = generateId()
     await super.start()
   }
 

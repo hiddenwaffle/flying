@@ -22,7 +22,7 @@ export class World {
   ) {
     this.assetsManager = babylonWrapper.assetsManager
     this.mobs = new Map()
-    this.mobs.set(player.remoteId, player)
+    this.mobs.set(player.id, player)
   }
 
   start() {

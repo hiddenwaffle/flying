@@ -1,4 +1,4 @@
 export interface Mob {
-  remoteId: number
+  id: number
   step(): void
 }
