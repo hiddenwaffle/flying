@@ -3,6 +3,7 @@ import { singleton } from 'tsyringe'
 import { Spaceship } from './spaceship'
 import { EventBus, EventType } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
+import { Mob } from './mob'
 
 export enum Direction {
   Idle,
@@ -21,8 +22,13 @@ const backwardDirections      = [Direction.Backward, Direction.BackwardLeft, Dir
 export const leftDirections   = [Direction.Left, Direction.ForwardLeft, Direction.BackwardLeft]
 export const rightDirections  = [Direction.Right, Direction.ForwardRight, Direction.BackwardRight]
 
+function generateId(): number {
+  return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)
+}
+
 @singleton()
-export class Player extends Spaceship {
+export class Player extends Spaceship implements Mob {
+  remoteId: number
   private direction = Direction.Idle
 
   constructor(
@@ -30,6 +36,7 @@ export class Player extends Spaceship {
     eventBus: EventBus
   ) {
     super(babylonWrapper)
+    this.remoteId = generateId()
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.direction = event.direction
     })
