@@ -5,12 +5,12 @@ import { singleton } from 'tsyringe'
 import { Skybox } from './skybox'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Player } from './player'
-import { Mob } from './mob'
+import { Projectile } from './projectile'
 
 @singleton()
 export class World {
   private readonly assetsManager: any
-  private readonly mobs: Map<number, Mob>
+  private readonly projectiles: Map<number, Projectile>
 
   constructor(
     private hemisphericLight: HemisphericLight,
@@ -21,8 +21,8 @@ export class World {
     babylonWrapper: BabylonWrapper
   ) {
     this.assetsManager = babylonWrapper.assetsManager
-    this.mobs = new Map()
-    this.mobs.set(player.id, player)
+    this.projectiles = new Map()
+    this.projectiles.set(player.id, player)
   }
 
   start() {
@@ -39,8 +39,8 @@ export class World {
 
   step() {
     this.skybox.step()
-    this.mobs.forEach((mob) => {
-      mob.step()
+    this.projectiles.forEach((projectile) => {
+      projectile.step()
     })
   }
 }

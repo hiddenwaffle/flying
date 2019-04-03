@@ -1,6 +1,6 @@
 import { singleton } from 'tsyringe'
 import { Keyboard, Key } from './keyboard'
-import { Direction } from 'js/world/player'
+import { Direction } from 'js/world/projectile'
 import { EventBus } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
 

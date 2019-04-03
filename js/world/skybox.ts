@@ -7,7 +7,7 @@ import * as skyPz from 'js/gfx/textures/TropicalSunnyDay_pz.jpg'
 
 import { singleton } from 'tsyringe'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
-import { Player, Direction, leftDirections, rightDirections } from './player'
+import { Player } from './player'
 
 @singleton()
 export class Skybox {
