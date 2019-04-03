@@ -1,39 +1,19 @@
-import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Projectile } from './projectile'
-import { singleton } from 'tsyringe'
-
-import * as spaceshipFile from 'js/gfx/models/spaceship.babylon.json'
+import { Loader } from 'js/gfx/loader'
 
 export abstract class Spaceship extends Projectile {
-  private assetsManager: any
+  private spaceshipMeshes: Array<any>
+  private readonly red: boolean
+  private readonly loader: Loader
 
-  constructor(
-    babylonWrapper: BabylonWrapper
-  ) {
+  constructor(red: boolean, loader: Loader) {
     super()
-    this.assetsManager = babylonWrapper.assetsManager
+    this.red = red
+    this.loader = loader
   }
 
-  start(): Promise<void> {
-    const spaceshipAddMeshTask = this.assetsManager.addMeshTask(
-      'spaceshipMesh',
-      '',
-      '',
-      spaceshipFile
-    )
-    return new Promise((resolve, reject) => {
-      spaceshipAddMeshTask.onSuccess = (task: any) => {
-        task.loadedMeshes[0].material.diffuseColor = new BABYLON.Color3(0.25, 0.5, 1)
-        for (const mesh of task.loadedMeshes) {
-          mesh.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2)
-          mesh.parent = this.arrow
-        }
-        resolve()
-      }
-      spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
-        console.log('ERROR', message, exception)
-        reject()
-      }
-    })
+  start() {
+    const id = Math.random() // TODO: What to do about this?
+    this.spaceshipMeshes = this.loader.getSpaceshipInstances(id, this.red, this.arrow)
   }
 }

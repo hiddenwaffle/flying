@@ -14,5 +14,4 @@ export class PlayerMoveEvent extends AbstractEvent {
   getType() {
     return EventType.PlayerMoveEvent
   }
-
 }

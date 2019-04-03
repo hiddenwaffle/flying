@@ -3,6 +3,7 @@ import { Controller } from 'js/input/controller'
 import { singleton } from 'tsyringe'
 import { Ui } from 'js/ui/ui'
 import { World } from 'js/world/world'
+import { Loader } from './gfx/loader'
 
 @singleton()
 export class Game {
@@ -14,6 +15,7 @@ export class Game {
     private ui: Ui,
     private controller: Controller,
     private world: World,
+    private loader: Loader,
     babylonWrapper: BabylonWrapper
   ) {
     this.canvas = babylonWrapper.canvas
@@ -21,7 +23,8 @@ export class Game {
     this.scene = babylonWrapper.scene
   }
 
-  start() {
+  async start() {
+    await this.loader.start()
     this.ui.start()
     this.controller.start()
     this.world.start()
