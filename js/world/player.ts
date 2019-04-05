@@ -22,9 +22,9 @@ export class Player extends Spaceship {
     })
   }
 
-  async start() {
+  start() {
     this.id = generateId()
-    await super.start()
+    super.start()
   }
 
   step() {

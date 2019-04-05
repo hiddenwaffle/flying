@@ -59,7 +59,6 @@ export class Loader {
         this.redMeshes[0].material.diffuseColor  = new BABYLON.Color3(0.80, 0.10, 0.20)
         this.blueMeshes[0].material = this.blueMeshes[0].material.clone('blue-material-0')
         this.blueMeshes[0].material.diffuseColor = new BABYLON.Color3(0.25, 0.50, 1.00)
-        console.log(this.redMeshes, this.blueMeshes)
         resolve()
       }
       spaceshipAddMeshTask.onError = (task: any, message: string, exception: any) => {
