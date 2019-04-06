@@ -1,19 +1,20 @@
 import { Projectile } from './projectile'
 import { Loader } from 'js/gfx/loader'
 
-export abstract class Spaceship extends Projectile {
+export class Spaceship extends Projectile {
+  private readonly id: number
   private spaceshipMeshes: Array<any>
   private readonly red: boolean
   private readonly loader: Loader
 
-  constructor(red: boolean, loader: Loader) {
+  constructor(id: number, red: boolean, loader: Loader) {
     super()
+    this.id = id
     this.red = red
     this.loader = loader
   }
 
   start() {
-    const id = Math.random() // TODO: What to do about this?
-    this.spaceshipMeshes = this.loader.getSpaceshipInstances(id, this.red, this.arrow)
+    this.spaceshipMeshes = this.loader.getSpaceshipInstances(this.id, this.red, this.arrow)
   }
 }
