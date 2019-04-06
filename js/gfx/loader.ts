@@ -9,11 +9,13 @@ export class Loader {
   private readonly assetsManager: any
   private readonly redMeshes = []
   private readonly blueMeshes = []
+  private tmpBabylonWrapper: BabylonWrapper
 
   constructor(
     babylonWrapper: BabylonWrapper
   ) {
     this.assetsManager = babylonWrapper.assetsManager
+    this.tmpBabylonWrapper = babylonWrapper
   }
 
   async start() {
@@ -48,8 +50,8 @@ export class Loader {
         for (let i = 0; i < task.loadedMeshes.length; i++) {
           const mesh = task.loadedMeshes[i]
           mesh.scaling = new BABYLON.Vector3(0.2, 0.2, 0.2)
-          const redMesh = mesh.clone(`redMesh-${i}`)
-          const blueMesh = mesh.clone(`blueMesh-${i}`)
+          const redMesh = mesh.clone(`redMesh-${i}`).makeGeometryUnique()
+          const blueMesh = mesh.clone(`blueMesh-${i}`).makeGeometryUnique()
           this.redMeshes.push(redMesh)
           this.blueMeshes.push(blueMesh)
         }

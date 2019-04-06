@@ -8,7 +8,7 @@ export class Spaceship extends Projectile {
   private readonly loader: Loader
 
   constructor(id: number, red: boolean, loader: Loader) {
-    super()
+    super(id)
     this.id = id
     this.red = red
     this.loader = loader
@@ -16,5 +16,6 @@ export class Spaceship extends Projectile {
 
   start() {
     this.spaceshipMeshes = this.loader.getSpaceshipInstances(this.id, this.red, this.arrow)
+    this.teleportRandom()
   }
 }

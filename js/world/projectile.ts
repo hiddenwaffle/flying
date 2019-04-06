@@ -41,12 +41,12 @@ export abstract class Projectile {
   maxvelx: number
   maxvely: number
 
-  constructor() {
-    this.cot = new BABYLON.TransformNode('cot')
+  constructor(id) {
+    this.cot = new BABYLON.TransformNode(`cot-${id}`)
     // Ensure quaternion rotation.
     this.cot.rotationQuaternion = new BABYLON.Quaternion()
 
-    this.arrow = new BABYLON.TransformNode('arrow')
+    this.arrow = new BABYLON.TransformNode(`arrow-${id}`)
     // Default height to be slightly above the surface.
     this.arrow.position.y = 45
     this.arrow.parent = this.cot
@@ -83,6 +83,18 @@ export abstract class Projectile {
    */
   turn(angle: number) {
     this.cot.rotate(BABYLON.Axis.Y, angle)
+  }
+
+  /**
+   * TODO: For x, y, and z, is it 2pi or 1pi or a mix of both?
+   */
+  teleportRandom() {
+    BABYLON.Quaternion.RotationYawPitchRollToRef(
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+      Math.random() * Math.PI * 2,
+      this.cot.rotationQuaternion
+    )
   }
 
   setDirection(direction: Direction) {
