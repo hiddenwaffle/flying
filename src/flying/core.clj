@@ -1,4 +1,4 @@
-(ns flying-clj.core
+(ns flying.core
   (:gen-class) ;; for uberjar
   (:require [org.httpkit.server :as hk]))
 

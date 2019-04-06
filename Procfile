@@ -1,1 +1,1 @@
-web: java $JVM_OPTS -jar target/flying-clj-standalone.jar
+web: java $JVM_OPTS -jar target/flying-standalone.jar

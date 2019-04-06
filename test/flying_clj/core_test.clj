@@ -1,6 +1,6 @@
-(ns flying-clj.core-test
+(ns flying.core-test
   (:require [clojure.test :refer :all]
-            [flying-clj.core :refer :all]))
+            [flying.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
