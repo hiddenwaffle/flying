@@ -7,9 +7,9 @@ export class Bot {
   readonly id: number
   readonly spaceship: Spaceship
 
-  constructor(loader: Loader) {
+  constructor(loader: Loader, red: boolean) {
     this.id = generateId()
-    this.spaceship = new Spaceship(this.id, false, loader) // TODO: Make red/blue dynamic
+    this.spaceship = new Spaceship(this.id, red, loader)
     this.spaceship.direction = Direction.Forward
   }
 

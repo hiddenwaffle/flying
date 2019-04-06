@@ -8,7 +8,7 @@ import { Loader } from 'js/gfx/loader'
 
 @singleton()
 export class World {
-  bot: Bot
+  bots: Array<Bot>
 
   constructor(
     private hemisphericLight: HemisphericLight,
@@ -17,20 +17,28 @@ export class World {
     private player: Player,
     loader: Loader
   ) {
-    this.bot = new Bot(loader)
+    this.bots = []
+    for (let i = 0; i < 16; i++) {
+      const bot = new Bot(loader, i < 8 ? true : false)
+      this.bots.push(bot)
+    }
   }
 
   start() {
     this.hemisphericLight.start()
     this.skybox.start()
     this.player.start()
-    this.bot.start()
+    this.bots.forEach((bot) => {
+      bot.start()
+    })
     this.camera.start()
   }
 
   step() {
     this.skybox.step()
     this.player.step()
-    this.bot.step()
+    this.bots.forEach((bot) => {
+      bot.step()
+    })
   }
 }
