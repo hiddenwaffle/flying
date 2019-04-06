@@ -5,6 +5,7 @@ import { Skybox } from './skybox'
 import { Player } from './player'
 import { Bot } from './bot'
 import { Loader } from 'js/gfx/loader'
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 
 @singleton()
 export class World {
@@ -15,11 +16,16 @@ export class World {
     private skybox: Skybox,
     private camera: Camera,
     private player: Player,
-    loader: Loader
+    loader: Loader,
+    babylonWrapper: BabylonWrapper
   ) {
     this.bots = []
     for (let i = 0; i < 16; i++) {
-      const bot = new Bot(loader, i < 8 ? true : false)
+      const bot = new Bot(
+        loader,
+        i < 8 ? true : false,
+        babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
+      )
       this.bots.push(bot)
     }
   }

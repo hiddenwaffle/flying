@@ -4,6 +4,7 @@ import { EventBus, EventType } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
 import { Loader } from 'js/gfx/loader'
 import { generateId } from 'js/math'
+import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 
 @singleton()
 export class Player {
@@ -12,10 +13,16 @@ export class Player {
 
   constructor(
     loader: Loader,
-    eventBus: EventBus
+    eventBus: EventBus,
+    babylonWrapper: BabylonWrapper
   ) {
     this.id = generateId()
-    this.spaceship = new Spaceship(this.id, true, loader) // TODO: Make red/blue dynamic
+    this.spaceship = new Spaceship(
+      this.id,
+      true, // TODO: Make red/blue dynamic
+      loader,
+      babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
+    )
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.direction = event.direction
     })

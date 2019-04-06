@@ -7,7 +7,6 @@ import { Loader } from './gfx/loader'
 
 @singleton()
 export class Game {
-  private canvas: HTMLCanvasElement
   private engine: any
   private scene: any
 
@@ -18,7 +17,6 @@ export class Game {
     private loader: Loader,
     babylonWrapper: BabylonWrapper
   ) {
-    this.canvas = babylonWrapper.canvas
     this.engine = babylonWrapper.engine
     this.scene = babylonWrapper.scene
   }

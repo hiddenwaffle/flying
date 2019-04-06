@@ -7,8 +7,8 @@ export class Spaceship extends Projectile {
   private readonly red: boolean
   private readonly loader: Loader
 
-  constructor(id: number, red: boolean, loader: Loader) {
-    super(id)
+  constructor(id: number, red: boolean, loader: Loader, getAnimationRatio: () => number) {
+    super(id, getAnimationRatio)
     this.id = id
     this.red = red
     this.loader = loader

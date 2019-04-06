@@ -41,7 +41,10 @@ export abstract class Projectile {
   maxvelx: number
   maxvely: number
 
-  constructor(id) {
+  constructor(
+    id: number,
+    private getAnimationRatio: () => number
+  ) {
     this.cot = new BABYLON.TransformNode(`cot-${id}`)
     // Ensure quaternion rotation.
     this.cot.rotationQuaternion = new BABYLON.Quaternion()
@@ -53,21 +56,30 @@ export abstract class Projectile {
   }
 
   step() {
+    let dmove = 0
+    let dturn = 0
+
     // TODO: This is a slight idle effect, could be better dynamic:
-    this.move(0.0004)
+    dmove += 0.0004
 
     if (forwardDirections.includes(this.direction)) {
-      this.move(0.02)
+      dmove += 0.02
     }
     if (backwardDirections.includes(this.direction)) {
-      this.move(-0.0075)
+      dmove += -0.0075
     }
     if (leftDirections.includes(this.direction)) {
-      this.turn(-0.04)
+      dturn += -0.04
     }
     if (rightDirections.includes(this.direction)) {
-      this.turn(0.04)
+      dturn += 0.04
     }
+
+    dmove *= this.getAnimationRatio()
+    dturn *= this.getAnimationRatio()
+
+    this.move(dmove)
+    this.turn(dturn)
   }
 
   /**
