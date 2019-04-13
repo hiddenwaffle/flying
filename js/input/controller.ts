@@ -1,13 +1,13 @@
 import { singleton } from 'tsyringe'
 import { Keyboard, Key } from './keyboard'
-import { Direction } from 'js/world/projectile'
+import { Yaw, Acceleration } from 'js/world/projectile'
 import { EventBus } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
 
 @singleton()
 export class Controller {
-  private prevDirection = Direction.Idle
-  private prevBoost = false
+  private prevYaw = Yaw.Straight
+  private prevAcceleration = Acceleration.None
 
   constructor(
     private keyboard: Keyboard,
@@ -28,49 +28,30 @@ export class Controller {
   }
 
   private interpretInputAsMovement() {
-    const up    = this.keyboard.isDown(Key.Up) ||
-                  this.keyboard.isDown(Key.Boost)
-    const boost = this.keyboard.isDown(Key.Boost)
-    const down  = this.keyboard.isDown(Key.Down)
-    const left  = this.keyboard.isDown(Key.Left)
-    const right = this.keyboard.isDown(Key.Right)
+    const accelerate  = this.keyboard.isDown(Key.Accelerate)
+    const decelerate  = this.keyboard.isDown(Key.Decelerate)
+    const left        = this.keyboard.isDown(Key.Left)
+    const right       = this.keyboard.isDown(Key.Right)
 
-    let nextDirection = Direction.Idle
-
-    if (up && !down) {
-      nextDirection = Direction.Forward
-      if (left && !right) {
-        nextDirection = Direction.ForwardLeft
-      }
-      if (!left && right) {
-        nextDirection = Direction.ForwardRight
-      }
+    let nextYaw = Yaw.Straight
+    if (left && !right) {
+      nextYaw = Yaw.Left
+    } else if (!left && right) {
+      nextYaw = Yaw.Right
     }
 
-    if (!up && down) {
-      nextDirection = Direction.Backward
-      if (left && !right) {
-        nextDirection = Direction.BackwardLeft
-      }
-      if (!left && right) {
-        nextDirection = Direction.BackwardRight
-      }
+    let nextAcceleration = Acceleration.None
+    if (accelerate && !decelerate) {
+      nextAcceleration = Acceleration.Increase
+    } else if (!accelerate && decelerate) {
+      nextAcceleration = Acceleration.Decrease
     }
 
-    if (nextDirection === Direction.Idle) {
-      if (left && !right) {
-        nextDirection = Direction.Left
-      }
-      if (!left && right) {
-        nextDirection = Direction.Right
-      }
-    }
-
-    if (this.prevDirection !== nextDirection ||
-        this.prevBoost !== boost) {
-      this.prevDirection = nextDirection
-      this.prevBoost = boost
-      this.eventBus.fire(new PlayerMoveEvent(nextDirection, boost))
+    if ((this.prevYaw !== nextYaw) ||
+        (this.prevAcceleration !== nextAcceleration)) {
+      this.prevYaw = nextYaw
+      this.prevAcceleration = nextAcceleration
+      this.eventBus.fire(new PlayerMoveEvent(nextYaw, nextAcceleration))
     }
   }
 }

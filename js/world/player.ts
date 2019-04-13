@@ -24,8 +24,8 @@ export class Player {
       babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
     )
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
-      this.spaceship.direction = event.direction
-      this.spaceship.boost = event.boost
+      this.spaceship.yaw = event.yaw
+      this.spaceship.acceleration = event.acceleration
     })
   }
 

@@ -1,25 +1,21 @@
-export enum Direction {
-  Idle,
-  Forward,
-  ForwardLeft,
-  ForwardRight,
-  Backward,
-  BackwardLeft,
-  BackwardRight,
+export enum Yaw {
+  Straight,
   Left,
   Right
 }
 
-const forwardDirections       = [Direction.Forward, Direction.ForwardLeft, Direction.ForwardRight]
-const backwardDirections      = [Direction.Backward, Direction.BackwardLeft, Direction.BackwardRight]
-export const leftDirections   = [Direction.Left, Direction.ForwardLeft, Direction.BackwardLeft]
-export const rightDirections  = [Direction.Right, Direction.ForwardRight, Direction.BackwardRight]
+export enum Acceleration {
+  None,
+  Increase,
+  Decrease
+}
 
 export abstract class Projectile {
   /**
    * Direction the projectile is heading, relative to its current position.
    */
-  direction = Direction.Idle
+  yaw = Yaw.Straight
+  acceleration = Acceleration.None
 
   /**
    * Center of Rotation for the arrow.
@@ -30,9 +26,6 @@ export abstract class Projectile {
    * "Points" in the current direction. Acts as a parent to the mesh.
    */
   arrow: any
-
-  boost = false
-  boostMultiplier = 1.25
 
   constructor(
     id: number,
@@ -55,22 +48,14 @@ export abstract class Projectile {
     // TODO: This is a slight idle effect, could be better dynamic:
     dmove += 0.0004
 
-    if (forwardDirections.includes(this.direction)) {
-      dmove += 0.02
-    }
-    if (backwardDirections.includes(this.direction)) {
-      dmove += -0.0075
-    }
-    if (leftDirections.includes(this.direction)) {
+    if (this.yaw === Yaw.Left) {
       dturn += -0.04
     }
-    if (rightDirections.includes(this.direction)) {
+    if (this.yaw === Yaw.Right) {
       dturn += 0.04
     }
 
-    if (dmove > 0 && this.boost) {
-      dmove *= this.boostMultiplier
-    }
+    // TODO: Do something with acceleration
 
     dmove *= this.getAnimationRatio()
     dturn *= this.getAnimationRatio()
@@ -106,15 +91,11 @@ export abstract class Projectile {
     )
   }
 
-  setDirection(direction: Direction) {
-    this.direction = direction
-  }
-
   isTurningLeft(): boolean {
-    return leftDirections.includes(this.direction)
+    return this.yaw === Yaw.Left
   }
 
   isTurningRight(): boolean {
-    return rightDirections.includes(this.direction)
+    return this.yaw === Yaw.Right
   }
 }

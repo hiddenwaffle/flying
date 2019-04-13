@@ -1,16 +1,15 @@
 import { singleton } from 'tsyringe'
 
 export const enum Key {
-  Left    = 1,
-  Up      = 2,
-  Down    = 3,
-  Right   = 4,
-  Boost   = 5,
-  Cancel  = 100,
+  Accelerate  = 1,
+  Decelerate  = 2,
+  Left        = 3,
+  Right       = 4,
+  Cancel      = 100,
   // Rest of these are special directives
-  Other   = 7,
-  Ignore  = 8,
-  Prevent = 9,
+  Other       = 7,
+  Ignore      = 8,
+  Prevent     = 9,
 }
 
 const enum State {
@@ -97,7 +96,7 @@ export class Keyboard {
         break;
       case 87: // 'w'
       case 38: // up
-        key = Key.Up;
+        key = Key.Accelerate;
         break;
       case 68: // 'd'
       case 39: // right
@@ -105,13 +104,10 @@ export class Keyboard {
         break;
       case 83: // 's'
       case 40: // down
-        key = Key.Down;
+        key = Key.Decelerate;
         break;
 
       // Actions ---------------------------------------------------------
-      case 16:    // shift
-        key = Key.Boost;
-        break;
       case 27:    // esc
         key = Key.Cancel;
         break;
@@ -119,6 +115,7 @@ export class Keyboard {
       // Ignore certain keys -------------------------------------------
       case 82:    // 'r'
       case 18:    // alt
+      case 16:    // shift
       case 224:   // apple command (firefox)
       case 17:    // apple command (opera)
       case 91:    // apple command, left (safari/chrome)
@@ -152,20 +149,16 @@ export class Keyboard {
         this.setState(Key.Left, state);
         preventDefault = true;
         break;
-      case Key.Up:
-        this.setState(Key.Up, state);
+      case Key.Accelerate:
+        this.setState(Key.Accelerate, state);
         // event.preventDefault() - commented for if the user wants to cmd+w or ctrl+w
         break;
       case Key.Right:
         this.setState(Key.Right, state);
         preventDefault = true;
         break;
-      case Key.Down:
-        this.setState(Key.Down, state);
-        preventDefault = true;
-        break;
-      case Key.Boost:
-        this.setState(Key.Boost, state);
+      case Key.Decelerate:
+        this.setState(Key.Decelerate, state);
         preventDefault = true;
         break;
       case Key.Cancel:
