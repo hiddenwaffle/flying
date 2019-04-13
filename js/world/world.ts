@@ -6,6 +6,7 @@ import { Player } from './player'
 import { Bot } from './bot'
 import { Loader } from 'js/gfx/loader'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
+import { MissilePool } from './missile-pool'
 
 @singleton()
 export class World {
@@ -16,6 +17,7 @@ export class World {
     private skybox: Skybox,
     private camera: Camera,
     private player: Player,
+    private missilePool: MissilePool,
     loader: Loader,
     babylonWrapper: BabylonWrapper
   ) {
@@ -25,7 +27,8 @@ export class World {
       const bot = new Bot(
         loader,
         babylonWrapper.scene,
-        true
+        true,
+        missilePool
       )
       this.bots.push(bot)
     }
@@ -47,5 +50,6 @@ export class World {
     this.bots.forEach((bot) => {
       bot.step()
     })
+    this.missilePool.step()
   }
 }

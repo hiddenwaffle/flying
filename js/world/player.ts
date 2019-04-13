@@ -5,7 +5,8 @@ import { PlayerMoveEvent } from 'js/event/player-move-event'
 import { Loader } from 'js/gfx/loader'
 import { generateId } from 'js/math'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
-import { PlayerAttackEvent } from 'js/event/player-attack-event';
+import { PlayerAttackEvent } from 'js/event/player-attack-event'
+import { MissilePool } from './missile-pool'
 
 @singleton()
 export class Player {
@@ -15,14 +16,16 @@ export class Player {
   constructor(
     loader: Loader,
     eventBus: EventBus,
-    babylonWrapper: BabylonWrapper
+    babylonWrapper: BabylonWrapper,
+    missilePool: MissilePool
   ) {
     this.id = generateId()
     this.spaceship = new Spaceship(
       this.id,
       false, // TODO: Make red/blue dynamic
       loader,
-      babylonWrapper.scene
+      babylonWrapper.scene,
+      missilePool
     )
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.yaw = event.yaw

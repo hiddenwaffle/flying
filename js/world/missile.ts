@@ -1,12 +1,16 @@
 import { Projectile } from './projectile'
 
 export class Missile extends Projectile {
-  private meshLeft: any
-  private meshRight: any
+  private readonly meshLeft: any
+  private readonly meshRight: any
   private ttl = 400 // milliseconds
 
-  constructor(id: number, scene: any, getAnimationRatio: () => number) {
-    super(id, getAnimationRatio)
+  constructor(
+    readonly spaceshipId: number,
+    id: number,
+    scene: any
+  ) {
+    super(id, scene.getAnimationRatio.bind(scene))
     this.meshLeft = BABYLON.MeshBuilder.CreateCylinder(
       `missile-${this.id}`,
       {
@@ -25,8 +29,8 @@ export class Missile extends Projectile {
       mesh.position.z = -1.25
       mesh.parent = this.arrow
     }
-    this.meshLeft.position.x  = -1
-    this.meshRight.position.x =  1
+    this.meshLeft.position.x    = -1
+    this.meshRight.position.x   =  1
     this.maxSpeed = this.currentSpeed = 0.04
   }
 
@@ -36,7 +40,7 @@ export class Missile extends Projectile {
 
   step() {
     super.step()
-    this.ttl -= 16.66 * this.getAnimationRatio()
+    this.ttl -= 16.66 * this.getAnimationRatio() // Assumes 60 fps
     if (this.ttl <= 0) {
       this.meshLeft.dispose()
       this.meshRight.dispose()
