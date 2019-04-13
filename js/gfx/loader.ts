@@ -69,7 +69,7 @@ export class Loader {
     return Promise.all([planetPromise, spaceshipPromise])
   }
 
-  getSpaceshipInstances(id: number, red: boolean, parent): any[] {
+  createSpaceshipMeshInstances(id: number, red: boolean, parent: any): any[] {
     const baseMeshes = red ? this.redMeshes : this.blueMeshes
     const instances = []
     for (let i = 0; i < baseMeshes.length; i++) {

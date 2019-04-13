@@ -24,8 +24,8 @@ export class World {
     for (let i = 0; i < numBots; i++) {
       const bot = new Bot(
         loader,
-        true,
-        babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
+        babylonWrapper.scene,
+        true
       )
       this.bots.push(bot)
     }

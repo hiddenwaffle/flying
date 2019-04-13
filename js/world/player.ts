@@ -5,6 +5,7 @@ import { PlayerMoveEvent } from 'js/event/player-move-event'
 import { Loader } from 'js/gfx/loader'
 import { generateId } from 'js/math'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
+import { PlayerAttackEvent } from 'js/event/player-attack-event';
 
 @singleton()
 export class Player {
@@ -21,11 +22,14 @@ export class Player {
       this.id,
       false, // TODO: Make red/blue dynamic
       loader,
-      babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
+      babylonWrapper.scene
     )
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.yaw = event.yaw
       this.spaceship.acceleration = event.acceleration
+    })
+    eventBus.register(EventType.PlayerAttackEvent, (event: PlayerAttackEvent) => {
+      this.spaceship.fireMissile()
     })
   }
 

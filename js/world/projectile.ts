@@ -32,8 +32,8 @@ export abstract class Projectile {
   arrow: any
 
   constructor(
-    id: number,
-    private getAnimationRatio: () => number
+    readonly id: number,
+    readonly getAnimationRatio: () => number
   ) {
     this.cot = new BABYLON.TransformNode(`cot-${id}`)
     // Ensure quaternion rotation.
@@ -55,9 +55,9 @@ export abstract class Projectile {
     }
 
     if (this.acceleration === Acceleration.Increase) {
-      this.currentSpeed += 0.0005
+      this.currentSpeed += 0.001
     } else if (this.acceleration === Acceleration.Decrease) {
-      this.currentSpeed -= 0.001 // Braking is faster
+      this.currentSpeed -= 0.002 // Braking is faster
     }
     // Clamp
     if (this.currentSpeed < this.minSpeed) {
@@ -99,6 +99,10 @@ export abstract class Projectile {
       Math.random() * Math.PI * 2,
       this.cot.rotationQuaternion
     )
+  }
+
+  copyRotationQuaterionFrom(other: any) {
+    this.cot.rotationQuaternion.copyFrom(other)
   }
 
   isTurningLeft(): boolean {

@@ -3,9 +3,10 @@ import { singleton } from 'tsyringe'
 // TODO: Clean this up
 
 export enum EventType {
-  ExampleEvent      =  1,
-  CancelEvent       =  2,
-  PlayerMoveEvent   =  3
+  ExampleEvent      = 1,
+  CancelEvent       = 2,
+  PlayerMoveEvent   = 3,
+  PlayerAttackEvent = 4
 }
 
 export abstract class AbstractEvent {

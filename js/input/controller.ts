@@ -3,6 +3,7 @@ import { Keyboard, Key } from './keyboard'
 import { Yaw, Acceleration } from 'js/world/projectile'
 import { EventBus } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
+import { PlayerAttackEvent } from 'js/event/player-attack-event'
 
 @singleton()
 export class Controller {
@@ -24,14 +25,15 @@ export class Controller {
 
   private handleKeyboard() {
     this.keyboard.step()
-    this.interpretInputAsMovement()
+    this.interpretInput()
   }
 
-  private interpretInputAsMovement() {
+  private interpretInput() {
     const throttleUp  = this.keyboard.isDown(Key.ThrottleUp)
     const brake       = this.keyboard.isDown(Key.Brake)
     const left        = this.keyboard.isDown(Key.Left)
     const right       = this.keyboard.isDown(Key.Right)
+    const fire        = this.keyboard.isDownAndUnhandled(Key.Fire)
 
     let nextYaw = Yaw.Straight
     if (left && !right) {
@@ -52,6 +54,10 @@ export class Controller {
       this.prevYaw = nextYaw
       this.prevAcceleration = nextAcceleration
       this.eventBus.fire(new PlayerMoveEvent(nextYaw, nextAcceleration))
+    }
+
+    if (fire) {
+      this.eventBus.fire(new PlayerAttackEvent())
     }
   }
 }
