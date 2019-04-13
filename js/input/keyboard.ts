@@ -1,8 +1,8 @@
 import { singleton } from 'tsyringe'
 
 export const enum Key {
-  Accelerate  = 1,
-  Decelerate  = 2,
+  ThrottleUp  = 1,
+  Brake       = 2,
   Left        = 3,
   Right       = 4,
   Cancel      = 100,
@@ -96,7 +96,7 @@ export class Keyboard {
         break;
       case 87: // 'w'
       case 38: // up
-        key = Key.Accelerate;
+        key = Key.ThrottleUp;
         break;
       case 68: // 'd'
       case 39: // right
@@ -104,7 +104,7 @@ export class Keyboard {
         break;
       case 83: // 's'
       case 40: // down
-        key = Key.Decelerate;
+        key = Key.Brake;
         break;
 
       // Actions ---------------------------------------------------------
@@ -149,16 +149,16 @@ export class Keyboard {
         this.setState(Key.Left, state);
         preventDefault = true;
         break;
-      case Key.Accelerate:
-        this.setState(Key.Accelerate, state);
+      case Key.ThrottleUp:
+        this.setState(Key.ThrottleUp, state);
         // event.preventDefault() - commented for if the user wants to cmd+w or ctrl+w
         break;
       case Key.Right:
         this.setState(Key.Right, state);
         preventDefault = true;
         break;
-      case Key.Decelerate:
-        this.setState(Key.Decelerate, state);
+      case Key.Brake:
+        this.setState(Key.Brake, state);
         preventDefault = true;
         break;
       case Key.Cancel:

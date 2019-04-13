@@ -28,8 +28,8 @@ export class Controller {
   }
 
   private interpretInputAsMovement() {
-    const accelerate  = this.keyboard.isDown(Key.Accelerate)
-    const decelerate  = this.keyboard.isDown(Key.Decelerate)
+    const throttleUp  = this.keyboard.isDown(Key.ThrottleUp)
+    const brake       = this.keyboard.isDown(Key.Brake)
     const left        = this.keyboard.isDown(Key.Left)
     const right       = this.keyboard.isDown(Key.Right)
 
@@ -41,9 +41,9 @@ export class Controller {
     }
 
     let nextAcceleration = Acceleration.None
-    if (accelerate && !decelerate) {
+    if (throttleUp && !brake) {
       nextAcceleration = Acceleration.Increase
-    } else if (!accelerate && decelerate) {
+    } else if (!throttleUp && brake) {
       nextAcceleration = Acceleration.Decrease
     }
 

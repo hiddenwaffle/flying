@@ -17,6 +17,10 @@ export abstract class Projectile {
   yaw = Yaw.Straight
   acceleration = Acceleration.None
 
+  minSpeed = 0.0025
+  maxSpeed = 0.02
+  currentSpeed = 0 // 0.02
+
   /**
    * Center of Rotation for the arrow.
    */
@@ -42,12 +46,7 @@ export abstract class Projectile {
   }
 
   step() {
-    let dmove = 0
     let dturn = 0
-
-    // TODO: This is a slight idle effect, could be better dynamic:
-    dmove += 0.0004
-
     if (this.yaw === Yaw.Left) {
       dturn += -0.04
     }
@@ -55,7 +54,18 @@ export abstract class Projectile {
       dturn += 0.04
     }
 
-    // TODO: Do something with acceleration
+    if (this.acceleration === Acceleration.Increase) {
+      this.currentSpeed += 0.0005
+    } else if (this.acceleration === Acceleration.Decrease) {
+      this.currentSpeed -= 0.001 // Braking is faster
+    }
+    // Clamp
+    if (this.currentSpeed < this.minSpeed) {
+      this.currentSpeed = this.minSpeed
+    } else if (this.currentSpeed > this.maxSpeed) {
+      this.currentSpeed = this.maxSpeed
+    }
+    let dmove = this.currentSpeed
 
     dmove *= this.getAnimationRatio()
     dturn *= this.getAnimationRatio()
