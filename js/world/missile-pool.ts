@@ -3,7 +3,7 @@ import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Missile } from './missile'
 import { generateId } from 'js/math'
 
-const POOL_SIZE = 50
+const POOL_SIZE = 20
 
 @singleton()
 export class MissilePool {
@@ -54,13 +54,14 @@ export class MissilePool {
   }
 
   fire(spaceshipId: number, rotationQuaternion: any) {
-    const missile = this.waiting.pop()
-    if (!missile) {
-      // TODO: Handle when there are none available, pick random one to reset?
-    } else {
-      missile.fire(rotationQuaternion)
-      this.active.set(missile.id, missile)
+    if (this.waiting.length === 0) {
+      // Handle when there are none available, pick arbitrary one to reset
+      const randomId = this.active.keys().next().value
+      this.returnToPool(randomId)
     }
+    let missile = this.waiting.pop()
+    missile.fire(rotationQuaternion)
+    this.active.set(missile.id, missile)
   }
 
   returnToPool(id: number) {
