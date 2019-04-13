@@ -1,49 +1,41 @@
 import { Projectile } from './projectile'
 
 export class Missile extends Projectile {
-  private readonly meshLeft: any
-  private readonly meshRight: any
-  private ttl = 400 // milliseconds
+  private ttl = 0
 
   constructor(
-    readonly spaceshipId: number,
     id: number,
-    scene: any
+    private readonly meshLeft: any,
+    private readonly meshRight: any,
+    scene: any,
+    private readonly returnToPool: (id: number) => void
   ) {
     super(id, scene.getAnimationRatio.bind(scene))
-    this.meshLeft = BABYLON.MeshBuilder.CreateCylinder(
-      `missile-${this.id}`,
-      {
-        diameterTop: 0,
-        diameterBottom: 0.25,
-        tessellation: 8
-      },
-      scene
-    )
-    this.meshRight = this.meshLeft.clone()
-    const material = new BABYLON.StandardMaterial(`missile-${this.id}-material`)
-    material.emissiveColor = new BABYLON.Color3(1, 1, 1)
-    for (let mesh of [this.meshLeft, this.meshRight]) {
-      mesh.material = material
-      mesh.rotate(BABYLON.Axis.X, Math.PI / 2)
-      mesh.position.z = -1.25
-      mesh.parent = this.arrow
-    }
     this.meshLeft.position.x    = -1
     this.meshRight.position.x   =  1
+    this.meshLeft.parent = this.arrow
+    this.meshRight.parent = this.arrow
     this.maxSpeed = this.currentSpeed = 0.04
-  }
-
-  start(rotationQuaternion: any) {
-    this.copyRotationQuaterionFrom(rotationQuaternion)
+    this.setEnabled(false)
   }
 
   step() {
     super.step()
     this.ttl -= 16.66 * this.getAnimationRatio() // Assumes 60 fps
     if (this.ttl <= 0) {
-      this.meshLeft.dispose()
-      this.meshRight.dispose()
+      this.setEnabled(false)
+      this.returnToPool(this.id)
     }
+  }
+
+  fire(rotationQuaternion: any) {
+    this.ttl = 400 // milliseconds
+    this.copyRotationQuaterionFrom(rotationQuaternion)
+    this.setEnabled(true)
+  }
+
+  private setEnabled(enabled: boolean) {
+    this.meshLeft.setEnabled(enabled)
+    this.meshRight.setEnabled(enabled)
   }
 }
