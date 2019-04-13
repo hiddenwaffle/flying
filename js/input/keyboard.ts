@@ -5,9 +5,8 @@ export const enum Key {
   Up      = 2,
   Down    = 3,
   Right   = 4,
-  Walk    = 5,
+  Boost   = 5,
   Cancel  = 100,
-  Pause   = 6,
   // Rest of these are special directives
   Other   = 7,
   Ignore  = 8,
@@ -111,16 +110,10 @@ export class Keyboard {
 
       // Actions ---------------------------------------------------------
       case 16:    // shift
-        key = Key.Walk;
+        key = Key.Boost;
         break;
       case 27:    // esc
         key = Key.Cancel;
-        break;
-
-      // Pause ---------------------------------------------------------
-      case 80: // 'p'
-      case 13: // enter key
-        key = Key.Pause;
         break;
 
       // Ignore certain keys -------------------------------------------
@@ -171,12 +164,8 @@ export class Keyboard {
         this.setState(Key.Down, state);
         preventDefault = true;
         break;
-      case Key.Walk:
-        this.setState(Key.Walk, state);
-        preventDefault = true;
-        break;
-      case Key.Pause:
-        this.setState(Key.Pause, state);
+      case Key.Boost:
+        this.setState(Key.Boost, state);
         preventDefault = true;
         break;
       case Key.Cancel:

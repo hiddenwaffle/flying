@@ -7,6 +7,7 @@ import { PlayerMoveEvent } from 'js/event/player-move-event'
 @singleton()
 export class Controller {
   private prevDirection = Direction.Idle
+  private prevBoost = false
 
   constructor(
     private keyboard: Keyboard,
@@ -27,7 +28,9 @@ export class Controller {
   }
 
   private interpretInputAsMovement() {
-    const up    = this.keyboard.isDown(Key.Up)
+    const up    = this.keyboard.isDown(Key.Up) ||
+                  this.keyboard.isDown(Key.Boost)
+    const boost = this.keyboard.isDown(Key.Boost)
     const down  = this.keyboard.isDown(Key.Down)
     const left  = this.keyboard.isDown(Key.Left)
     const right = this.keyboard.isDown(Key.Right)
@@ -63,9 +66,11 @@ export class Controller {
       }
     }
 
-    if (this.prevDirection !== nextDirection) {
+    if (this.prevDirection !== nextDirection ||
+        this.prevBoost !== boost) {
       this.prevDirection = nextDirection
-      this.eventBus.fire(new PlayerMoveEvent(nextDirection))
+      this.prevBoost = boost
+      this.eventBus.fire(new PlayerMoveEvent(nextDirection, boost))
     }
   }
 }

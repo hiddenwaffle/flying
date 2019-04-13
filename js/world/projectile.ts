@@ -31,6 +31,9 @@ export abstract class Projectile {
    */
   arrow: any
 
+  boost = false
+  boostMultiplier = 1.25
+
   constructor(
     id: number,
     private getAnimationRatio: () => number
@@ -63,6 +66,10 @@ export abstract class Projectile {
     }
     if (rightDirections.includes(this.direction)) {
       dturn += 0.04
+    }
+
+    if (dmove > 0 && this.boost) {
+      dmove *= this.boostMultiplier
     }
 
     dmove *= this.getAnimationRatio()

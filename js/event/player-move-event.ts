@@ -2,13 +2,11 @@ import { EventType, AbstractEvent } from './event-bus'
 import { Direction } from 'js/world/projectile'
 
 export class PlayerMoveEvent extends AbstractEvent {
-  direction: Direction
-
   constructor(
-    direction: Direction
+    readonly direction: Direction,
+    readonly boost: boolean
   ) {
     super()
-    this.direction = direction
   }
 
   getType() {

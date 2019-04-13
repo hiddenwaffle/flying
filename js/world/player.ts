@@ -25,6 +25,7 @@ export class Player {
     )
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.direction = event.direction
+      this.spaceship.boost = event.boost
     })
   }
 
