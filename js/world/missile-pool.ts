@@ -60,7 +60,7 @@ export class MissilePool {
       this.returnToPool(randomId)
     }
     let missile = this.waiting.pop()
-    missile.fire(rotationQuaternion)
+    missile.fire(spaceshipId, rotationQuaternion)
     this.active.set(missile.id, missile)
   }
 

@@ -2,6 +2,7 @@ import { Projectile } from './projectile'
 
 export class Missile extends Projectile {
   private ttl = 0
+  private spaceshipId: number
 
   constructor(
     id: number,
@@ -28,8 +29,9 @@ export class Missile extends Projectile {
     }
   }
 
-  fire(rotationQuaternion: any) {
+  fire(spaceshipId: number, rotationQuaternion: any) {
     this.ttl = 400 // milliseconds
+    this.spaceshipId = spaceshipId
     this.copyRotationQuaterionFrom(rotationQuaternion)
     this.setEnabled(true)
   }
