@@ -20,10 +20,11 @@ export class World {
     babylonWrapper: BabylonWrapper
   ) {
     this.bots = []
-    for (let i = 0; i < 16; i++) {
+    const numBots = 16
+    for (let i = 0; i < numBots; i++) {
       const bot = new Bot(
         loader,
-        i < 8 ? true : false,
+        true,
         babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
       )
       this.bots.push(bot)

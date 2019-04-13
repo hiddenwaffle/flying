@@ -19,7 +19,7 @@ export class Player {
     this.id = generateId()
     this.spaceship = new Spaceship(
       this.id,
-      true, // TODO: Make red/blue dynamic
+      false, // TODO: Make red/blue dynamic
       loader,
       babylonWrapper.scene.getAnimationRatio.bind(babylonWrapper.scene)
     )
