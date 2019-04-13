@@ -67,6 +67,5 @@ export class MissilePool {
     const missile = this.active.get(id)
     this.active.delete(id)
     this.waiting.push(missile)
-    console.log(this.waiting.length)
   }
 }
