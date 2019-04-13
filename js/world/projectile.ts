@@ -31,16 +31,6 @@ export abstract class Projectile {
    */
   arrow: any
 
-  // These are for calculating turning, forward, and backward movement.
-  accx: number
-  accy: number
-  maxaccx: number
-  maxaccy: number
-  velx: number
-  vely: number
-  maxvelx: number
-  maxvely: number
-
   constructor(
     id: number,
     private getAnimationRatio: () => number

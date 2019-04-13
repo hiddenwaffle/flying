@@ -11,3 +11,5 @@
 (defn -main []
   (hk/run-server handler {:port (Integer/valueOf (or (System/getenv "PORT")
                                                      "3000"))}))
+
+;; TODO: Handle lag by calculating jitter from pings and hold events for X milliseconds

@@ -36,6 +36,6 @@ export class Camera {
         )
         camera.setTarget(new BABYLON.Vector3(0, 0, 0))
     }
-    camera.attachControl(this.canvas, true)
+    // camera.attachControl(this.canvas, true)
   }
 }

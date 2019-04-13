@@ -9,13 +9,11 @@ export class Loader {
   private readonly assetsManager: any
   private readonly redMeshes = []
   private readonly blueMeshes = []
-  private tmpBabylonWrapper: BabylonWrapper
 
   constructor(
     babylonWrapper: BabylonWrapper
   ) {
     this.assetsManager = babylonWrapper.assetsManager
-    this.tmpBabylonWrapper = babylonWrapper
   }
 
   async start() {
