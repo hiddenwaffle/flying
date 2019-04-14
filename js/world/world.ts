@@ -8,7 +8,8 @@ import { Loader } from 'js/gfx/loader'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { MissilePool } from './missile-pool'
 import { EventBus, EventType } from 'js/event/event-bus'
-import { PositionAndHeadingEvent } from 'js/event/position-and-heading-event';
+import { PositionAndHeadingEvent } from 'js/event/position-and-heading-event'
+import { AttackEvent } from 'js/event/attack-event'
 
 @singleton()
 export class World {
@@ -33,6 +34,10 @@ export class World {
       bot.spaceship.acceleration = event.acceleration
       bot.setQ(event.x, event.y, event.z, event.w)
       bot.setSpeed(event.speed)
+    })
+    eventBus.register(EventType.Attack, (event: AttackEvent) => {
+      let bot = this.getOrCreateBot(event.id)
+      bot.fire()
     })
   }
 

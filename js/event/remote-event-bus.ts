@@ -3,6 +3,7 @@ import { EventBus } from 'js/event/event-bus'
 import { RemoteConnectedEvent } from 'js/event/remote-connected-event'
 import { PositionAndHeadingEvent } from './position-and-heading-event'
 import { JoinedEvent } from './joined-event'
+import { AttackEvent } from './attack-event'
 
 @singleton()
 export class RemoteEventBus {
@@ -50,6 +51,9 @@ export class RemoteEventBus {
           break
         case 'position-and-heading':
           this.eventBus.fire(new PositionAndHeadingEvent(obj))
+          break
+        case 'attack':
+          this.eventBus.fire(new AttackEvent(obj))
           break
         default:
           console.log('unknown', obj.type)

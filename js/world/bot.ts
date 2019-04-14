@@ -33,4 +33,8 @@ export class Bot {
   setSpeed(speed: number) {
     this.spaceship.setSpeed(speed)
   }
+
+  fire() {
+    this.spaceship.fireMissile()
+  }
 }

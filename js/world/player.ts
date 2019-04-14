@@ -13,7 +13,8 @@ import { RemoteEventBus } from 'js/event/remote-event-bus'
 export class Player {
   readonly id: number
   readonly spaceship: Spaceship
-  private signalChange = false
+  private signalMovement = false
+  private signalAttack = false
 
   constructor(
     loader: Loader,
@@ -33,33 +34,20 @@ export class Player {
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.yaw = event.yaw
       this.spaceship.acceleration = event.acceleration
-      this.signalChange = true
+      this.signalMovement = true
     })
     eventBus.register(EventType.PlayerAttackEvent, (event: PlayerAttackEvent) => {
       this.spaceship.fireMissile()
+      this.signalAttack = true
     })
     eventBus.register(EventType.RemoteConnected, () => {
       this.remoteEventBus.fire({
         type: 'joined'
       })
-      this.createPositionAndHeadingEvent()
+      this.firePositionAndHeadingEvent()
     })
     eventBus.register(EventType.JoinedEvent, () => {
-      this.createPositionAndHeadingEvent()
-    })
-  }
-
-  private createPositionAndHeadingEvent() {
-    this.remoteEventBus.fire({
-      type: 'position-and-heading',
-      id: this.id,
-      yaw: this.spaceship.yaw,
-      acceleration: this.spaceship.acceleration,
-      x: this.spaceship.q.x,
-      y: this.spaceship.q.y,
-      z: this.spaceship.q.z,
-      w: this.spaceship.q.w,
-      speed: this.spaceship.currentSpeed
+      this.firePositionAndHeadingEvent()
     })
   }
 
@@ -69,9 +57,17 @@ export class Player {
 
   step() {
     this.spaceship.step()
-    if (this.signalChange) {
-      this.signalChange = false
-      this.createPositionAndHeadingEvent()
+    if (this.signalMovement) {
+      this.signalMovement = false
+      this.firePositionAndHeadingEvent()
+    }
+    if (this.signalAttack) {
+      this.signalAttack = false
+      this.firePositionAndHeadingEvent()
+      this.remoteEventBus.fire({
+        type: 'attack',
+        id: this.id
+      })
     }
   }
 
@@ -89,5 +85,19 @@ export class Player {
 
   get cot() {
     return this.spaceship.cot
+  }
+
+  private firePositionAndHeadingEvent() {
+    this.remoteEventBus.fire({
+      type: 'position-and-heading',
+      id: this.id,
+      yaw: this.spaceship.yaw,
+      acceleration: this.spaceship.acceleration,
+      x: this.spaceship.q.x,
+      y: this.spaceship.q.y,
+      z: this.spaceship.q.z,
+      w: this.spaceship.q.w,
+      speed: this.spaceship.currentSpeed
+    })
   }
 }
