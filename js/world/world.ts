@@ -12,6 +12,7 @@ import { PositionAndHeadingEvent } from 'js/event/position-and-heading-event';
 
 @singleton()
 export class World {
+  private readonly scene: any
   bots: Map<number, Bot>
 
   constructor(
@@ -20,18 +21,16 @@ export class World {
     private camera: Camera,
     private player: Player,
     private missilePool: MissilePool,
-    loader: Loader,
+    private loader: Loader,
     babylonWrapper: BabylonWrapper,
     eventBus: EventBus
   ) {
+    this.scene = babylonWrapper.scene
     this.bots = new Map()
     eventBus.register(EventType.PositionAndHeading, (event: PositionAndHeadingEvent) => {
-      let bot = this.bots.get(event.id)
-      if (!bot) {
-        bot = new Bot(loader, babylonWrapper.scene, missilePool)
-        this.bots.set(event.id, bot)
-        bot.start()
-      }
+      let bot = this.getOrCreateBot(event.id)
+      bot.spaceship.yaw = event.yaw
+      bot.spaceship.acceleration = event.acceleration
       bot.setQ(event.x, event.y, event.z, event.w)
       bot.setSpeed(event.speed)
     })
@@ -51,5 +50,15 @@ export class World {
       bot.step()
     })
     this.missilePool.step()
+  }
+
+  private getOrCreateBot(id: number) {
+    let bot = this.bots.get(id)
+    if (!bot) {
+      bot = new Bot(this.loader, this.scene, this.missilePool)
+      this.bots.set(id, bot)
+      bot.start()
+    }
+    return bot
   }
 }

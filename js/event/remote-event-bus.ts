@@ -2,7 +2,7 @@ import { singleton } from 'tsyringe'
 import { EventBus } from 'js/event/event-bus'
 import { RemoteConnectedEvent } from 'js/event/remote-connected-event'
 import { PositionAndHeadingEvent } from './position-and-heading-event'
-import { JoinedEvent } from './joined-event';
+import { JoinedEvent } from './joined-event'
 
 @singleton()
 export class RemoteEventBus {

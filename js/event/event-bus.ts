@@ -10,8 +10,9 @@ export enum EventType {
   PlayerAttackEvent = 4,
   RemoteConnected   = 5,
   // From remote sources
-  JoinedEvent = 100,
-  PositionAndHeading = 101
+  JoinedEvent         = 100,
+  PositionAndHeading  = 101,
+  BotMove             = 102
 }
 
 export abstract class AbstractEvent {

@@ -13,6 +13,7 @@ import { RemoteEventBus } from 'js/event/remote-event-bus'
 export class Player {
   readonly id: number
   readonly spaceship: Spaceship
+  private signalChange = false
 
   constructor(
     loader: Loader,
@@ -32,6 +33,7 @@ export class Player {
     eventBus.register(EventType.PlayerMoveEvent, (event: PlayerMoveEvent) => {
       this.spaceship.yaw = event.yaw
       this.spaceship.acceleration = event.acceleration
+      this.signalChange = true
     })
     eventBus.register(EventType.PlayerAttackEvent, (event: PlayerAttackEvent) => {
       this.spaceship.fireMissile()
@@ -40,26 +42,24 @@ export class Player {
       this.remoteEventBus.fire({
         type: 'joined'
       })
-      this.remoteEventBus.fire({
-        type: 'position-and-heading',
-        id: this.id,
-        x: this.spaceship.q.x,
-        y: this.spaceship.q.y,
-        z: this.spaceship.q.z,
-        w: this.spaceship.q.w,
-        speed: this.spaceship.currentSpeed
-      })
+      this.createPositionAndHeadingEvent()
     })
     eventBus.register(EventType.JoinedEvent, () => {
-      this.remoteEventBus.fire({
-        type: 'position-and-heading',
-        id: this.id,
-        x: this.spaceship.q.x,
-        y: this.spaceship.q.y,
-        z: this.spaceship.q.z,
-        w: this.spaceship.q.w,
-        speed: this.spaceship.currentSpeed
-      })
+      this.createPositionAndHeadingEvent()
+    })
+  }
+
+  private createPositionAndHeadingEvent() {
+    this.remoteEventBus.fire({
+      type: 'position-and-heading',
+      id: this.id,
+      yaw: this.spaceship.yaw,
+      acceleration: this.spaceship.acceleration,
+      x: this.spaceship.q.x,
+      y: this.spaceship.q.y,
+      z: this.spaceship.q.z,
+      w: this.spaceship.q.w,
+      speed: this.spaceship.currentSpeed
     })
   }
 
@@ -69,6 +69,10 @@ export class Player {
 
   step() {
     this.spaceship.step()
+    if (this.signalChange) {
+      this.signalChange = false
+      this.createPositionAndHeadingEvent()
+    }
   }
 
   isTurningLeft() {
