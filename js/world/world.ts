@@ -54,7 +54,7 @@ export class World {
     this.bots.forEach((bot) => {
       bot.step()
     })
-    this.missilePool.step()
+    this.missilePool.step([...this.bots.values()], this.player.id)
     this.stepReaper()
   }
 

@@ -3,7 +3,7 @@ import { Loader } from 'js/gfx/loader'
 import { MissilePool } from './missile-pool'
 
 export class Spaceship extends Projectile {
-  private readonly meshInstances: Array<any>
+  meshInstances: Array<any>
   readonly red: boolean
   private readonly loader: Loader
   private readonly missilePool: MissilePool
@@ -22,7 +22,7 @@ export class Spaceship extends Projectile {
   }
 
   start() {
-    const meshInstances = this.loader.createSpaceshipMeshInstances(this.id, this.red, this.arrow)
+    this.meshInstances = this.loader.createSpaceshipMeshInstances(this.id, this.red, this.arrow)
     this.teleportRandom()
   }
 

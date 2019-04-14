@@ -2,6 +2,7 @@ import { singleton } from 'tsyringe'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Missile } from './missile'
 import { generateId } from 'js/math'
+import { Bot } from './bot'
 
 const POOL_SIZE = 20
 
@@ -47,9 +48,13 @@ export class MissilePool {
     }
   }
 
-  step() {
+  step(bots: Array<Bot>, playerId: number) {
     for (let missile of this.active.values()) {
       missile.step()
+      // Check only own missile's collisions
+      if (missile.spaceshipId === playerId) {
+        missile.checkCollision(bots)
+      }
     }
   }
 
