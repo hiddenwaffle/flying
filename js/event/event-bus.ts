@@ -6,7 +6,8 @@ export enum EventType {
   ExampleEvent      = 1,
   CancelEvent       = 2,
   PlayerMoveEvent   = 3,
-  PlayerAttackEvent = 4
+  PlayerAttackEvent = 4,
+  RemoteConnected   = 5
 }
 
 export abstract class AbstractEvent {

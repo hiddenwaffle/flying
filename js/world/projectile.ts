@@ -105,6 +105,10 @@ export abstract class Projectile {
     this.cot.rotationQuaternion.copyFrom(other)
   }
 
+  get q() {
+    return this.cot.rotationQuaternion
+  }
+
   isTurningLeft(): boolean {
     return this.yaw === Yaw.Left
   }

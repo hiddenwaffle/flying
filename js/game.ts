@@ -4,6 +4,7 @@ import { singleton } from 'tsyringe'
 import { Ui } from 'js/ui/ui'
 import { World } from 'js/world/world'
 import { Loader } from './gfx/loader'
+import { RemoteEventBus } from './remote-event/remote-event-bus'
 
 @singleton()
 export class Game {
@@ -15,7 +16,8 @@ export class Game {
     private controller: Controller,
     private world: World,
     private loader: Loader,
-    babylonWrapper: BabylonWrapper
+    babylonWrapper: BabylonWrapper,
+    private remoteEventBus: RemoteEventBus
   ) {
     this.engine = babylonWrapper.engine
     this.scene = babylonWrapper.scene
@@ -23,6 +25,7 @@ export class Game {
 
   async start() {
     await this.loader.start()
+    this.remoteEventBus.start()
     this.ui.start()
     this.controller.start()
     this.world.start()

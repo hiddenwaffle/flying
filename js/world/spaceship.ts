@@ -3,7 +3,7 @@ import { Loader } from 'js/gfx/loader'
 import { MissilePool } from './missile-pool'
 
 export class Spaceship extends Projectile {
-  private readonly red: boolean
+  readonly red: boolean
   private readonly loader: Loader
   private readonly missilePool: MissilePool
 

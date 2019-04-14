@@ -7,6 +7,7 @@ import { generateId } from 'js/math'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { PlayerAttackEvent } from 'js/event/player-attack-event'
 import { MissilePool } from './missile-pool'
+import { RemoteEventBus } from 'js/remote-event/remote-event-bus'
 
 @singleton()
 export class Player {
@@ -17,12 +18,13 @@ export class Player {
     loader: Loader,
     eventBus: EventBus,
     babylonWrapper: BabylonWrapper,
-    missilePool: MissilePool
+    missilePool: MissilePool,
+    private readonly removeEventBus: RemoteEventBus
   ) {
     this.id = generateId()
     this.spaceship = new Spaceship(
       this.id,
-      false, // TODO: Make red/blue dynamic
+      false,
       loader,
       babylonWrapper.scene,
       missilePool
@@ -33,6 +35,22 @@ export class Player {
     })
     eventBus.register(EventType.PlayerAttackEvent, (event: PlayerAttackEvent) => {
       this.spaceship.fireMissile()
+    })
+    eventBus.register(EventType.RemoteConnected, () => {
+      this.removeEventBus.fire({
+        type: 'joined',
+        id: this.id
+      })
+      this.removeEventBus.fire({
+        type: 'position-and-heading',
+        id: this.id,
+        q: {
+          x: this.spaceship.q.x,
+          y: this.spaceship.q.y,
+          z: this.spaceship.q.z,
+          w: this.spaceship.q.w
+        }
+      })
     })
   }
 

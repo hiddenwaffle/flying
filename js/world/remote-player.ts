@@ -3,7 +3,7 @@ import { Spaceship } from './spaceship'
 import { Loader } from 'js/gfx/loader'
 import { MissilePool } from './missile-pool';
 
-export class Bot {
+export class RemotePlayer {
   readonly id: number
   readonly spaceship: Spaceship
   readonly scene: any
@@ -11,11 +11,10 @@ export class Bot {
   constructor(
     loader: Loader,
     scene: any,
-    red: boolean,
     missilePool: MissilePool
   ) {
     this.id = generateId()
-    this.spaceship = new Spaceship(this.id, red, loader, scene, missilePool)
+    this.spaceship = new Spaceship(this.id, true, loader, scene, missilePool)
     this.scene = scene
   }
 
