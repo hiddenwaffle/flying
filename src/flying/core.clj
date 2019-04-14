@@ -10,7 +10,7 @@
     (when (not (identical? channel original-channel))
       (hk/send! channel data))))
 
-(defn verify-event [obj]
+(defn validate-event [obj]
   (let [type (get obj "type")]
     (not (nil? type))))
 
@@ -22,7 +22,7 @@
 (defn on-receive [data channel]
   (println "Received" data)
   (let [obj (parse-raw data)]
-    (when (verify-event obj)
+    (when (validate-event obj)
       (broadcast data channel))))
 
 (defn register [channel]
