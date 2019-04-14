@@ -3,7 +3,7 @@ import { Spaceship } from './spaceship'
 import { Loader } from 'js/gfx/loader'
 import { MissilePool } from './missile-pool';
 
-export class RemotePlayer {
+export class Bot {
   readonly id: number
   readonly spaceship: Spaceship
   readonly scene: any
@@ -24,5 +24,13 @@ export class RemotePlayer {
 
   step() {
     this.spaceship.step()
+  }
+
+  setQ(x: number, y: number, z: number, w: number) {
+    this.spaceship.setQ(x, y, z, w)
+  }
+
+  setSpeed(speed: number) {
+    this.spaceship.setSpeed(speed)
   }
 }

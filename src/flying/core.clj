@@ -26,8 +26,7 @@
       (broadcast data channel))))
 
 (defn register [channel]
-  (swap! active-channels conj channel)
-  (println "Channels:" @active-channels))
+  (swap! active-channels conj channel))
 
 (defn deregister [original-channel]
   (swap! active-channels

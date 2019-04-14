@@ -4,7 +4,7 @@ import { singleton } from 'tsyringe'
 import { Ui } from 'js/ui/ui'
 import { World } from 'js/world/world'
 import { Loader } from './gfx/loader'
-import { RemoteEventBus } from './remote-event/remote-event-bus'
+import { RemoteEventBus } from './event/remote-event-bus'
 
 @singleton()
 export class Game {

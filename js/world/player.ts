@@ -7,7 +7,7 @@ import { generateId } from 'js/math'
 import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { PlayerAttackEvent } from 'js/event/player-attack-event'
 import { MissilePool } from './missile-pool'
-import { RemoteEventBus } from 'js/remote-event/remote-event-bus'
+import { RemoteEventBus } from 'js/event/remote-event-bus'
 
 @singleton()
 export class Player {
@@ -19,7 +19,7 @@ export class Player {
     eventBus: EventBus,
     babylonWrapper: BabylonWrapper,
     missilePool: MissilePool,
-    private readonly removeEventBus: RemoteEventBus
+    private readonly remoteEventBus: RemoteEventBus
   ) {
     this.id = generateId()
     this.spaceship = new Spaceship(
@@ -37,19 +37,28 @@ export class Player {
       this.spaceship.fireMissile()
     })
     eventBus.register(EventType.RemoteConnected, () => {
-      this.removeEventBus.fire({
-        type: 'joined',
-        id: this.id
+      this.remoteEventBus.fire({
+        type: 'joined'
       })
-      this.removeEventBus.fire({
+      this.remoteEventBus.fire({
         type: 'position-and-heading',
         id: this.id,
-        q: {
-          x: this.spaceship.q.x,
-          y: this.spaceship.q.y,
-          z: this.spaceship.q.z,
-          w: this.spaceship.q.w
-        }
+        x: this.spaceship.q.x,
+        y: this.spaceship.q.y,
+        z: this.spaceship.q.z,
+        w: this.spaceship.q.w,
+        speed: this.spaceship.currentSpeed
+      })
+    })
+    eventBus.register(EventType.JoinedEvent, () => {
+      this.remoteEventBus.fire({
+        type: 'position-and-heading',
+        id: this.id,
+        x: this.spaceship.q.x,
+        y: this.spaceship.q.y,
+        z: this.spaceship.q.z,
+        w: this.spaceship.q.w,
+        speed: this.spaceship.currentSpeed
       })
     })
   }

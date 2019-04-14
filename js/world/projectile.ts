@@ -109,6 +109,14 @@ export abstract class Projectile {
     return this.cot.rotationQuaternion
   }
 
+  setQ(x: number, y: number, z: number, w: number) {
+    this.cot.rotationQuaternion.set(x, y, z, w)
+  }
+
+  setSpeed(speed: number) {
+    this.currentSpeed = speed
+  }
+
   isTurningLeft(): boolean {
     return this.yaw === Yaw.Left
   }
