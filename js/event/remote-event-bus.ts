@@ -8,13 +8,20 @@ import { AttackEvent } from './attack-event'
 @singleton()
 export class RemoteEventBus {
   private ws: WebSocket
+  private readonly serviceLocation: string
 
   constructor(
     private readonly eventBus: EventBus
-  ) { }
+  ) {
+    if (location.hostname === 'localhost') {
+      this.serviceLocation = 'ws://localhost:3000'
+    } else {
+      this.serviceLocation = 'wss://unremarkable-flying.herokuapp.com'
+    }
+  }
 
   start() {
-    this.ws = new WebSocket('ws://localhost:3000')
+    this.ws = new WebSocket(this.serviceLocation)
     const ws = this.ws
     ws.onmessage = (msg) => {
       this.deserializeAndFire(msg.data)
