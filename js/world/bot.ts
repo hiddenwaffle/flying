@@ -1,19 +1,18 @@
-import { generateId } from 'js/math'
 import { Spaceship } from './spaceship'
 import { Loader } from 'js/gfx/loader'
 import { MissilePool } from './missile-pool';
 
 export class Bot {
-  readonly id: number
   readonly spaceship: Spaceship
   readonly scene: any
+  lastUpdate = Date.now()
 
   constructor(
+    readonly id: number,
     loader: Loader,
     scene: any,
     missilePool: MissilePool
   ) {
-    this.id = generateId()
     this.spaceship = new Spaceship(this.id, true, loader, scene, missilePool)
     this.scene = scene
   }
@@ -26,7 +25,12 @@ export class Bot {
     this.spaceship.step()
   }
 
+  stop() {
+    this.spaceship.stop()
+  }
+
   setQ(x: number, y: number, z: number, w: number) {
+    this.lastUpdate = Date.now()
     this.spaceship.setQ(x, y, z, w)
   }
 

@@ -8,7 +8,9 @@
 (defn broadcast [data original-channel]
   (doseq [channel @active-channels]
     (when (not (identical? channel original-channel))
-      (hk/send! channel data))))
+      (try
+        (hk/send! channel data)
+        (catch Exception e (println "broadcast error") nil)))))
 
 (defn validate-event [obj]
   (let [type (get obj "type")]

@@ -74,6 +74,11 @@ export abstract class Projectile {
     this.turn(dturn)
   }
 
+  stop() {
+    this.cot.dispose()
+    this.arrow.dispose()
+  }
+
   /**
    * Negative angle is back,
    * positive angle is forward.

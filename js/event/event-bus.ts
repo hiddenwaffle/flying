@@ -12,7 +12,9 @@ export enum EventType {
   // From remote sources
   JoinedEvent         = 100,
   PositionAndHeading  = 101,
-  Attack              = 102
+  Attack              = 102,
+  PingEvent           = 103,
+  PongEvent           = 104
 }
 
 export abstract class AbstractEvent {

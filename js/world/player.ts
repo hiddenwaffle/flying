@@ -15,6 +15,7 @@ export class Player {
   readonly spaceship: Spaceship
   private signalMovement = false
   private signalAttack = false
+  private lastUpdate = Date.now()
 
   constructor(
     loader: Loader,
@@ -68,6 +69,11 @@ export class Player {
         type: 'attack',
         id: this.id
       })
+    }
+    const now = Date.now()
+    if (now - this.lastUpdate > 2000) { // See world.ts to double check interval
+      this.lastUpdate = now
+      this.firePositionAndHeadingEvent()
     }
   }
 

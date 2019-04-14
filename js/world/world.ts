@@ -55,15 +55,33 @@ export class World {
       bot.step()
     })
     this.missilePool.step()
+    this.stepReaper()
   }
 
   private getOrCreateBot(id: number) {
     let bot = this.bots.get(id)
     if (!bot) {
-      bot = new Bot(this.loader, this.scene, this.missilePool)
+      bot = new Bot(id, this.loader, this.scene, this.missilePool)
       this.bots.set(id, bot)
       bot.start()
     }
     return bot
+  }
+
+  private stepReaper() {
+    const now = Date.now()
+    const ids: Array<number> = []
+    this.bots.forEach((bot) => {
+      if (now - bot.lastUpdate > 3000) { // See player.ts for interval (here should be higher)
+        ids.push(bot.id)
+      }
+    })
+    ids.forEach((id) => {
+      let bot = this.bots.get(id)
+      if (bot) {
+        bot.stop()
+        this.bots.delete(id)
+      }
+    })
   }
 }
