@@ -10,11 +10,19 @@ export class Explosion extends Projectile {
     private readonly returnToPool: (id: number) => void
   ) {
     super(id, scene.getAnimationRatio.bind(scene))
+    this.meshSphere.parent = this.arrow
+    this.minSpeed = this.currentSpeed = 0
     this.setEnabled(false)
   }
 
-  explode(rotationQuaternion: any) {
-    this.copyRotationQuaterionFrom(rotationQuaternion)
+  step() {
+    super.step()
+    // TODO: Advance the explosion animation
+  }
+
+  explode(x: number, y: number, z: number, w: number) {
+    console.log('BOOM ', this.id, x, y, z, w, this.meshSphere)
+    this.setQ(x, y, z, w)
     this.setEnabled(true)
   }
 

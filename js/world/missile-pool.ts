@@ -77,7 +77,7 @@ export class MissilePool {
     this.active.set(missile.id, missile)
   }
 
-  returnToPool(id: number) {
+  private returnToPool(id: number) {
     const missile = this.active.get(id)
     if (missile) {
       this.active.delete(id)

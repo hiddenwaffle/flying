@@ -25,6 +25,7 @@ export class ExplosionPool {
       { segments: 8 },
       babylonWrapper.scene
     )
+    // this.meshSphere.scaling = new BABYLON.Vector3(50, 50, 50)
     const material = new BABYLON.StandardMaterial('explosionMesh-material')
     material.emissiveColor = new BABYLON.Color3(1, 1, 1)
     this.meshSphere.material = material
@@ -40,7 +41,7 @@ export class ExplosionPool {
       this.waiting.push(explosion)
     }
     eventBus.register(EventType.Explosion, (event: ExplosionEvent) => {
-      console.log('BOOM', event.x, event.y, event.z, event.w)
+      this.explode(event.x, event.y, event.z, event.w)
     })
   }
 
@@ -50,18 +51,18 @@ export class ExplosionPool {
     }
   }
 
-  explode(rotationQuaternion: any) {
+  private explode(x: number, y: number, z: number, w: number) {
     if (this.waiting.length === 0) {
       // Handle when there are none available, pick arbitrary one to reset
       const randomId = this.active.keys().next().value
       this.returnToPool(randomId)
     }
     let explosion = this.waiting.pop()
-    explosion.explode(rotationQuaternion)
+    explosion.explode(x, y, z, w)
     this.active.set(explosion.id, explosion)
   }
 
-  returnToPool(id: number) {
+  private returnToPool(id: number) {
     const explosion = this.active.get(id)
     if (explosion) {
       this.active.delete(id)
