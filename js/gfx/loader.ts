@@ -9,20 +9,11 @@ export class Loader {
   private readonly assetsManager: any
   private readonly redMeshes = []
   private readonly blueMeshes = []
-  // private readonly explosionMesh: any
 
   constructor(
     babylonWrapper: BabylonWrapper
   ) {
     this.assetsManager = babylonWrapper.assetsManager
-    // this.explosionMesh = BABYLON.MeshBuilder.CreateSphere(
-    //   'explosionMesh',
-    //   { segments: 8 },
-    //   babylonWrapper.scene
-    // )
-    // const material = new BABYLON.StandardMaterial('explosionMesh-material')
-    // material.emissiveColor = new BABYLON.Color3(1, 1, 1)
-    // this.explosionMesh.material = material
   }
 
   async start() {
@@ -88,10 +79,4 @@ export class Loader {
     }
     return instances
   }
-
-  // createExplosionMeshInstance(id: number, parent: any): any {
-  //   const instance = this.explosionMesh.createInstance(`explosion-${id}`)
-  //   instance.parent = parent
-  //   return instance
-  // }
 }

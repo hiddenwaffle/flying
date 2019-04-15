@@ -3,14 +3,14 @@ import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Missile } from './missile'
 import { generateId } from 'js/math'
 import { Bot } from './bot'
-import { EventBus } from 'js/event/event-bus'
 import { RemoteEventBus } from 'js/event/remote-event-bus'
+import { EventBus } from 'js/event/event-bus'
+import { ExplosionEvent } from 'js/event/explosion-event';
 
 const POOL_SIZE = 20
 
 @singleton()
 export class MissilePool {
-  private readonly scene: any
   private readonly meshLeft: any
   private readonly meshRight: any
 
@@ -19,36 +19,39 @@ export class MissilePool {
 
   constructor(
     private readonly remoteEventBus: RemoteEventBus,
+    private readonly eventBus: EventBus,
     babylonWrapper: BabylonWrapper
   ) {
-    this.scene = babylonWrapper.scene
-
     this.waiting = []
     this.active = new Map()
-
     this.meshLeft = BABYLON.MeshBuilder.CreateCylinder(
-      'missile-left',
+      'meshLeft',
       {
         diameterTop: 0,
         diameterBottom: 0.25,
         tessellation: 8
       },
-      this.scene
+      babylonWrapper.scene
     )
-    this.meshRight = this.meshLeft.clone('missle-right').makeGeometryUnique()
-    const material = new BABYLON.StandardMaterial('missile-material')
-    material.emissiveColor = new BABYLON.Color3(1, 1, 1)
+    this.meshRight = this.meshLeft.clone('meshRight').makeGeometryUnique()
+    const missileMaterial = new BABYLON.StandardMaterial('missileMaterial')
+    missileMaterial.emissiveColor = new BABYLON.Color3(1, 1, 1)
     for (let mesh of [this.meshLeft, this.meshRight]) {
-      mesh.material = material
+      mesh.material = missileMaterial
       mesh.rotate(BABYLON.Axis.X, Math.PI / 2)
       mesh.position.z = -1.25
     }
-
     for (let i = 0; i < POOL_SIZE; i++) {
       const id = generateId()
       const left  = this.meshLeft.createInstance(`missile-left-${id}`)
       const right = this.meshRight.createInstance(`missile-right-${id}`)
-      const missile = new Missile(id, left, right, this.scene, this.returnToPool.bind(this))
+      const missile = new Missile(
+        id,
+        left,
+        right,
+        babylonWrapper.scene,
+        this.returnToPool.bind(this)
+      )
       this.waiting.push(missile)
     }
   }
@@ -76,14 +79,21 @@ export class MissilePool {
 
   returnToPool(id: number) {
     const missile = this.active.get(id)
-    this.active.delete(id)
-    this.waiting.push(missile)
+    if (missile) {
+      this.active.delete(id)
+      this.waiting.push(missile)
+    }
   }
 
-  private signalHit(id: number) {
+  private signalHit(spaceshipId: number, q: any) {
     this.remoteEventBus.fire({
       type: 'missile-hit',
-      id
+      spaceshipId,
+      x: q.x,
+      y: q.y,
+      z: q.z,
+      w: q.w
     })
+    this.eventBus.fire(new ExplosionEvent(q.x, q.y, q.z, q.w))
   }
 }

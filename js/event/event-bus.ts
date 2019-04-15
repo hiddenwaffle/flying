@@ -9,6 +9,7 @@ export enum EventType {
   PlayerMoveEvent   = 3,
   PlayerAttackEvent = 4,
   RemoteConnected   = 5,
+  Explosion         = 6,
   // From remote sources
   JoinedEvent         = 100,
   PositionAndHeading  = 101,

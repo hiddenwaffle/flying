@@ -41,8 +41,4 @@ export class Bot {
   fire() {
     this.spaceship.fireMissile()
   }
-
-  signalHit() {
-    this.spaceship.hitAnimation()
-  }
 }
