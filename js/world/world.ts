@@ -10,6 +10,7 @@ import { MissilePool } from './missile-pool'
 import { EventBus, EventType } from 'js/event/event-bus'
 import { PositionAndHeadingEvent } from 'js/event/position-and-heading-event'
 import { AttackEvent } from 'js/event/attack-event'
+import { MissileHitEvent } from 'js/event/missile-hit-event';
 
 @singleton()
 export class World {
@@ -39,6 +40,10 @@ export class World {
       let bot = this.getOrCreateBot(event.id)
       bot.fire()
     })
+    eventBus.register(EventType.MissileHit, (event: MissileHitEvent) => {
+      let bot = this.getOrCreateBot(event.id)
+      bot.signalHit()
+    })
   }
 
   start() {
@@ -54,7 +59,7 @@ export class World {
     this.bots.forEach((bot) => {
       bot.step()
     })
-    this.missilePool.step([...this.bots.values()], this.player.id)
+    this.missilePool.step([...this.bots.values()], this.player.id) // TODO: Use iterator to avoid array?
     this.stepReaper()
   }
 

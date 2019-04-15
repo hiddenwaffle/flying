@@ -4,6 +4,7 @@ import { RemoteConnectedEvent } from 'js/event/remote-connected-event'
 import { PositionAndHeadingEvent } from './position-and-heading-event'
 import { JoinedEvent } from './joined-event'
 import { AttackEvent } from './attack-event'
+import { MissileHitEvent } from './missile-hit-event';
 
 @singleton()
 export class RemoteEventBus {
@@ -61,6 +62,9 @@ export class RemoteEventBus {
           break
         case 'attack':
           this.eventBus.fire(new AttackEvent(obj))
+          break
+        case 'missile-hit':
+          this.eventBus.fire(new MissileHitEvent(obj))
           break
         default:
           console.log('unknown', obj.type)

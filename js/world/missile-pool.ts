@@ -3,6 +3,8 @@ import { BabylonWrapper } from 'js/gfx/babylon-wrapper'
 import { Missile } from './missile'
 import { generateId } from 'js/math'
 import { Bot } from './bot'
+import { EventBus } from 'js/event/event-bus'
+import { RemoteEventBus } from 'js/event/remote-event-bus'
 
 const POOL_SIZE = 20
 
@@ -15,14 +17,17 @@ export class MissilePool {
   private readonly waiting: Array<Missile>
   private readonly active: Map<number, Missile>
 
-  constructor(babylonWrapper: BabylonWrapper) {
+  constructor(
+    private readonly remoteEventBus: RemoteEventBus,
+    babylonWrapper: BabylonWrapper
+  ) {
     this.scene = babylonWrapper.scene
 
     this.waiting = []
     this.active = new Map()
 
     this.meshLeft = BABYLON.MeshBuilder.CreateCylinder(
-      `missile-left`,
+      'missile-left',
       {
         diameterTop: 0,
         diameterBottom: 0.25,
@@ -53,7 +58,7 @@ export class MissilePool {
       missile.step()
       // Check only own missile's collisions
       if (missile.spaceshipId === playerId) {
-        missile.checkCollision(bots)
+        missile.checkCollision(bots, this.signalHit.bind(this))
       }
     }
   }
@@ -73,5 +78,12 @@ export class MissilePool {
     const missile = this.active.get(id)
     this.active.delete(id)
     this.waiting.push(missile)
+  }
+
+  private signalHit(id: number) {
+    this.remoteEventBus.fire({
+      type: 'missile-hit',
+      id
+    })
   }
 }

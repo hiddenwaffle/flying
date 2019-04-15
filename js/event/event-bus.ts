@@ -14,7 +14,8 @@ export enum EventType {
   PositionAndHeading  = 101,
   Attack              = 102,
   PingEvent           = 103,
-  PongEvent           = 104
+  PongEvent           = 104,
+  MissileHit          = 105
 }
 
 export abstract class AbstractEvent {

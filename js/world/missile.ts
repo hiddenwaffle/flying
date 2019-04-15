@@ -30,12 +30,13 @@ export class Missile extends Projectile {
     }
   }
 
-  checkCollision(bots: Array<Bot>) {
+  checkCollision(bots: Array<Bot>, signalHit: (id: number) => void) {
     for (let bot of bots) {
       for (let mesh of bot.spaceship.meshInstances) {
         if ((this.meshLeft.intersectsMesh(mesh, false) ||
             (this.meshRight.intersectsMesh(mesh, false)))) {
-          // TODO: Signal
+          bot.signalHit()
+          signalHit(bot.id)
         }
       }
     }
