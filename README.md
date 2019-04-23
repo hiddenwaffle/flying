@@ -30,6 +30,12 @@ The mathematics behind the movement are located here: https://github.com/Babylon
 
 The gist is that for the given mesh, calculate a quaterion based on the given axis and angle, then multiply it by the mesh's current quaternion to get the new quaternion for the mesh's center of rotation.
 
+## Assignment Notes
+
+To find the component-to-class** mappings, search the project source for the text *FLYING_ARCHITECTURE*.
+
+**Classes in TypeScript/ES2015+ are actually syntactic sugar on top of prototypical OOP.
+
 ## Credits
 
 Skybox

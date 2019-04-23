@@ -9,6 +9,9 @@ import { PlayerAttackEvent } from 'js/event/player-attack-event'
 import { MissilePool } from './missile-pool'
 import { RemoteEventBus } from 'js/event/remote-event-bus'
 
+/**
+ * FLYING_ARCHITECTURE - "Player's Spaceship" Component
+ */
 @singleton()
 export class Player {
   readonly id: number

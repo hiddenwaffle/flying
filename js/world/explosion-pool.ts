@@ -7,6 +7,9 @@ import { singleton } from 'tsyringe';
 
 const POOL_SIZE = 20
 
+/**
+ * FLYING_ARCHITECTURE - "Environment" Component
+ */
 @singleton()
 export class ExplosionPool {
   private readonly meshSphere: any

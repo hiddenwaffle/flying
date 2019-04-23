@@ -6,6 +6,9 @@ import { JoinedEvent } from './joined-event'
 import { AttackEvent } from './attack-event'
 import { MissileHitEvent } from './missile-hit-event';
 
+/**
+ * FLYING_ARCHITECTURE - "Remote Event Bus (JS)" Connector
+ */
 @singleton()
 export class RemoteEventBus {
   private ws: WebSocket

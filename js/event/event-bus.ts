@@ -25,6 +25,9 @@ export abstract class AbstractEvent {
 
 type EventHandler<T extends AbstractEvent> = (event: T) => void
 
+/**
+ * FLYING_ARCHITECTURE - "Event Bus" Connector
+ */
 @singleton()
 export class EventBus {
   private handlersByType: Map<EventType, Array<EventHandler<AbstractEvent>>>

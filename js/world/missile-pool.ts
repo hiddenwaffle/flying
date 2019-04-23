@@ -9,6 +9,9 @@ import { ExplosionEvent } from 'js/event/explosion-event';
 
 const POOL_SIZE = 20
 
+/**
+ * FLYING_ARCHITECTURE - "Environment" Component
+ */
 @singleton()
 export class MissilePool {
   private readonly meshLeft: any

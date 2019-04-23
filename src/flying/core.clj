@@ -1,3 +1,4 @@
+;; FLYING_ARCHITECTURE - "Remote Event Bus (Clojure)" Connector
 (ns flying.core
   (:gen-class) ;; for uberjar
   (:require [org.httpkit.server :as hk])

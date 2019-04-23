@@ -5,6 +5,9 @@ import { EventBus } from 'js/event/event-bus'
 import { PlayerMoveEvent } from 'js/event/player-move-event'
 import { PlayerAttackEvent } from 'js/event/player-attack-event'
 
+/**
+ * FLYING_ARCHITECTURE - "Interface" Component
+ */
 @singleton()
 export class Controller {
   private prevYaw = Yaw.Straight

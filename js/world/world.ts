@@ -14,9 +14,16 @@ import { MissileHitEvent } from 'js/event/missile-hit-event'
 import { ExplosionEvent } from 'js/event/explosion-event'
 import { ExplosionPool } from './explosion-pool'
 
+/**
+ * FLYING_ARCHITECTURE - Environment Component
+ */
 @singleton()
 export class World {
   private readonly scene: any
+
+  /**
+   * FLYING_ARCHITECTURE - "Other Spaceships" Component
+   */
   bots: Map<number, Bot>
 
   constructor(
